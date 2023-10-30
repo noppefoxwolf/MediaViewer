@@ -15,6 +15,19 @@ public final class PreviewController: WorkaroundNavigationController {
         options: [.interPageSpacing : UIStackView.spacingUseSystem]
     )
     
+    public var currentPreviewItemIndex: Int = 0
+    
+    public func refreshCurrentPreviewItem() {
+        let item = dataSource?.previewController(self, previewItemAt: currentPreviewItemIndex)
+        if let item {
+            pageViewController.setViewControllers(
+                [ PreviewItemViewController(item, index: currentPreviewItemIndex) ],
+                direction: .forward,
+                animated: false
+            )
+        }
+    }
+    
     public init() {
         super.init(
             navigationBarClass: UINavigationBar.self,
@@ -29,11 +42,9 @@ public final class PreviewController: WorkaroundNavigationController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
-        
         setViewControllers([pageViewController], animated: false)
         setNavigationBarHidden(false, animated: false)
         setToolbarHidden(false, animated: false)
-        
         
         navigationBar.standardAppearance.configureWithTransparentBackground()
         navigationBar.tintColor = .white
@@ -44,15 +55,10 @@ public final class PreviewController: WorkaroundNavigationController {
         
         hidesBarsOnTap = true
         
-        let item = dataSource!.previewController(self, previewItemAt: 0)
-        pageViewController.setViewControllers(
-            [
-                item.makeViewController()
-            ],
-            direction: .forward,
-            animated: false
-        )
+        refreshCurrentPreviewItem()
+        pageViewController.delegate = self
         pageViewController.dataSource = self
+        pageViewController.uiDelegate = self
         
         let panGesture = UIPanGestureRecognizer()
         panGesture.delegate = self
@@ -125,16 +131,58 @@ extension PreviewController: UIPageViewControllerDataSource {
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController
     ) -> UIViewController? {
-        let item = dataSource!.previewController(self, previewItemAt: 0)
-        return item.makeViewController()
+        let previewItemViewController = viewController as! PreviewItemViewController
+        let beforeIndex = previewItemViewController.index - 1
+        guard beforeIndex > 0 else { return nil }
+        let item = dataSource?.previewController(
+            self,
+            previewItemAt: beforeIndex
+        )
+        guard let item else { return nil }
+        return PreviewItemViewController(item, index: beforeIndex)
     }
     
     public func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerAfter viewController: UIViewController
     ) -> UIViewController? {
-        let item = dataSource!.previewController(self, previewItemAt: 0)
-        return item.makeViewController()
+        let previewItemViewController = viewController as! PreviewItemViewController
+        let afterIndex = previewItemViewController.index + 1
+        let itemsCount = dataSource!.numberOfPreviewItems(in: self)
+        guard afterIndex < itemsCount else { return nil }
+        let item = dataSource?.previewController(
+            self,
+            previewItemAt: afterIndex
+        )
+        guard let item else { return nil }
+        return PreviewItemViewController(item, index: afterIndex)
+    }
+}
+
+extension PreviewController: UIPageViewControllerDelegate {
+    public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+        let currentViewController = pageViewController.viewControllers?.first as? PreviewItemViewController
+        if let currentViewController {
+            currentPreviewItemIndex = currentViewController.index
+        }
+    }
+}
+
+extension PreviewController: PageViewControllerUIDelegate {
+    func dismissActionTriggered() {
+        setNavigationBarHidden(true, animated: true)
+        setToolbarHidden(true, animated: true)
+        dismiss(animated: true)
+    }
+    
+    func presentActivityActionTriggered() {
+        let item = dataSource?.previewController(self, previewItemAt: currentPreviewItemIndex)
+        let configuration = item?.makeActivityItemsConfiguration()
+        guard let configuration else { return }
+        let vc = UIActivityViewController(
+            activityItemsConfiguration: configuration
+        )
+        present(vc, animated: true)
     }
 }
 

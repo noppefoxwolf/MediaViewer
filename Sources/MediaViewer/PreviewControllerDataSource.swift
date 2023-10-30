@@ -6,8 +6,3 @@ public protocol PreviewControllerDataSource: AnyObject {
     func previewController(_ controller: PreviewController, previewItemAt index: Int) -> any PreviewItem
 }
 
-public protocol PreviewItem {
-    associatedtype ViewControllerType: UIViewController
-    var previewItemID: String { get }
-    func makeViewController() -> ViewControllerType
-}

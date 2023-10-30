@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 import UIKit
 import MediaViewer
 
@@ -49,25 +50,35 @@ class ViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = PreviewController()
         vc.dataSource = self
+        vc.currentPreviewItemIndex = 2
         present(vc, animated: true)
     }
+    
+    var items: [any PreviewItem] = [
+        "a",
+        "b",
+        "c",
+        "d",
+        UIImage(named: "image")!,
+        AVPlayer(url: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/main.m3u8")!),
+    ]
 }
 
 extension ViewController: PreviewControllerDataSource {
     func numberOfPreviewItems(in controller: PreviewController) -> Int {
-        100
+        items.count
     }
     
     func previewController(_ controller: PreviewController, previewItemAt index: Int) -> any PreviewItem {
-        "Hello"
+        items[index]
     }
 }
 
 extension String: PreviewItem {
-    public var previewItemID: String { self }
     public func makeViewController() -> some UIViewController {
         //ImagePreviewItemViewController()
-        PlayerPreviewItemViewController()
+        //PlayerPreviewItemViewController()
+        UIHostingController(rootView: Text(self))
     }
 }
 

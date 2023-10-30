@@ -4,7 +4,17 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
 
     let scrollView = UIScrollView()
     let imageView = UIImageView()
-    var doubleTapGesture: UITapGestureRecognizer!
+    let doubleTapGesture = UITapGestureRecognizer()
+    let image: UIImage
+    
+    public init(image: UIImage) {
+        self.image = image
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     public override func loadView() {
         view = scrollView
@@ -32,10 +42,10 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
         ])
         
         // 画像をセット
-        imageView.image = UIImage(named: "image")
+        imageView.image = image
         
         // ダブルタップジェスチャーレコグナイザーを作成し、UIImageViewに追加する
-        doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTapGesture(_:)))
+        doubleTapGesture.addTarget(self, action: #selector(handleDoubleTapGesture))
         doubleTapGesture.numberOfTapsRequired = 2
         imageView.addGestureRecognizer(doubleTapGesture)
         

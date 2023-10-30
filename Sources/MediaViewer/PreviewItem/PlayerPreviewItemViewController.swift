@@ -4,7 +4,16 @@ import AVKit
 public final class PlayerPreviewItemViewController: UIViewController {
     private let playerView = AVPlayerView()
     
-    let player = AVPlayer(url: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/main.m3u8")!)
+    let player: AVPlayer
+    
+    public init(player: AVPlayer) {
+        self.player = player
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     public override func loadView() {
         view = playerView
