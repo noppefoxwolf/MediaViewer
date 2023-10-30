@@ -11,7 +11,8 @@ public final class PreviewController: WorkaroundNavigationController {
     
     let pageViewController = PageViewController(
         transitionStyle: .scroll,
-        navigationOrientation: .horizontal
+        navigationOrientation: .horizontal,
+        options: [.interPageSpacing : UIStackView.spacingUseSystem]
     )
     
     public init() {
@@ -42,7 +43,9 @@ public final class PreviewController: WorkaroundNavigationController {
         
         let item = dataSource!.previewController(self, previewItemAt: 0)
         pageViewController.setViewControllers(
-            [PreviewItemViewController(item.makeViewController())],
+            [
+                PreviewItemViewController(item.makeViewController())
+            ],
             direction: .forward,
             animated: false
         )
