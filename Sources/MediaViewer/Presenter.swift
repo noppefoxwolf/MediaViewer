@@ -1,6 +1,8 @@
 import UIKit
 
 final class Presenter: NSObject, UIViewControllerTransitioningDelegate {
+    var reversedDismiss: Bool = false
+    
     func presentationController(
         forPresented presented: UIViewController,
         presenting: UIViewController?,
@@ -23,7 +25,7 @@ final class Presenter: NSObject, UIViewControllerTransitioningDelegate {
     func animationController(
         forDismissed dismissed: UIViewController
     ) -> UIViewControllerAnimatedTransitioning? {
-        DismissAnimator()
+        reversedDismiss ? ReversedDismissAnimator() : DismissAnimator()
     }
     
     var interactor: Interactor? = nil

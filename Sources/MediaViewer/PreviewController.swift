@@ -68,7 +68,22 @@ public final class PreviewController: WorkaroundNavigationController {
             dismiss(animated: true)
         case .changed:
             let percentComplete = translation.y / gesture.view!.bounds.height
-            presenter.interactor?.update(percentComplete)
+            if percentComplete < 0 {
+                if !presenter.reversedDismiss {
+                    presenter.interactor?.cancel()
+                    presenter.interactor = Interactor()
+                    presenter.reversedDismiss.toggle()
+                    dismiss(animated: true)
+                }
+            } else {
+                if presenter.reversedDismiss {
+                    presenter.interactor?.cancel()
+                    presenter.interactor = Interactor()
+                    presenter.reversedDismiss.toggle()
+                    dismiss(animated: true)
+                }
+            }
+            presenter.interactor?.update(abs(percentComplete))
         case .ended:
             if abs(translation.y) > 60 {
                 presenter.interactor?.finish()
