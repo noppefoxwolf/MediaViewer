@@ -23,7 +23,7 @@ extension UIImage {
         return renderer.image { context in
             let pathRect = CGRect(origin: .zero, size: size)
             let path = CGPath(ellipseIn: pathRect, transform: nil)
-            context.cgContext.setFillColor(CGColor(gray: 0, alpha: 1))
+            context.cgContext.setFillColor(CGColor(gray: 0, alpha: 0.5))
             context.cgContext.addPath(path)
             context.cgContext.fillPath()
         }

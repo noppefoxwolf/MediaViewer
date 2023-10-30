@@ -16,7 +16,10 @@ public final class PreviewController: WorkaroundNavigationController {
     )
     
     public init() {
-        super.init(nibName: nil, bundle: nil)
+        super.init(
+            navigationBarClass: UINavigationBar.self,
+            toolbarClass: Toolbar.self
+        )
         transitioningDelegate = presenter
         modalPresentationStyle = .custom
     }
@@ -44,7 +47,7 @@ public final class PreviewController: WorkaroundNavigationController {
         let item = dataSource!.previewController(self, previewItemAt: 0)
         pageViewController.setViewControllers(
             [
-                PreviewItemViewController(item.makeViewController())
+                item.makeViewController()
             ],
             direction: .forward,
             animated: false
@@ -123,8 +126,7 @@ extension PreviewController: UIPageViewControllerDataSource {
         viewControllerBefore viewController: UIViewController
     ) -> UIViewController? {
         let item = dataSource!.previewController(self, previewItemAt: 0)
-        let vc = item.makeViewController()
-        return PreviewItemViewController(vc)
+        return item.makeViewController()
     }
     
     public func pageViewController(
@@ -132,8 +134,14 @@ extension PreviewController: UIPageViewControllerDataSource {
         viewControllerAfter viewController: UIViewController
     ) -> UIViewController? {
         let item = dataSource!.previewController(self, previewItemAt: 0)
-        let vc = item.makeViewController()
-        return PreviewItemViewController(vc)
+        return item.makeViewController()
     }
 }
 
+fileprivate final class Toolbar: UIToolbar {
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        var size = super.sizeThatFits(size)
+        size.height = 100
+        return size
+    }
+}

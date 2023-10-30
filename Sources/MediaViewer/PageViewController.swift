@@ -17,8 +17,5 @@ final class PageViewController: UIPageViewController {
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis"))
         navigationItem.rightBarButtonItem?.setBackgroundImage(.makeBarBackground(), for: .normal, barMetrics: .default)
-        toolbarItems = [UIBarButtonItem(systemItem: .action)]
-        
-        
     }
 }

@@ -67,7 +67,7 @@ extension String: PreviewItem {
     public var previewItemID: String { self }
     public func makeViewController() -> some UIViewController {
         //ImagePreviewItemViewController()
-        VideoPreviewItemViewController()
+        PlayerPreviewItemViewController()
     }
 }
 
