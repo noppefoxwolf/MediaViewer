@@ -26,7 +26,7 @@ class ViewController: UITableViewController {
         cellProvider: { [unowned self] (tableView, indexPath, item) in
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             cell.contentConfiguration = UIHostingConfiguration(content: {
-                Text("ok")
+                Text("open MediaViewer")
             })
             return cell
         }
@@ -41,7 +41,7 @@ class ViewController: UITableViewController {
         _ = dataSource
         
         snapshot.appendSections([.items])
-        snapshot.appendItems((0..<10).map({ _ in Item() }), toSection: .items)
+        snapshot.appendItems((0..<1).map({ _ in Item() }), toSection: .items)
         
         dataSource.apply(snapshot)
     }

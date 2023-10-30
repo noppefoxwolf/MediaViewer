@@ -119,11 +119,7 @@ fileprivate final class Seekbar: UIControl {
             using: { [weak self] time in
                 let value = Float(time.seconds)
                 if value.isNormal {
-                    CATransaction.begin()
-                    CATransaction.setAnimationDuration(CATransaction.animationDuration())
-                    self?.slider.setValue(value, animated: true)
-                    CATransaction.commit()
-                    
+                    self?.slider.setValue(value, animated: false)
                     self?.timeLabel.currentTime = time
                 }
             }
