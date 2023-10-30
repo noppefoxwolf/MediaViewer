@@ -66,7 +66,8 @@ extension ViewController: PreviewControllerDataSource {
 extension String: PreviewItem {
     public var previewItemID: String { self }
     public func makeViewController() -> some UIViewController {
-        ImagePreviewItemViewController()
+        //ImagePreviewItemViewController()
+        VideoPreviewItemViewController()
     }
 }
 
