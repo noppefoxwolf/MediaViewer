@@ -14,9 +14,11 @@ fileprivate final class Seekbar: UIControl {
     let playbackButton = UIButton(configuration: .playback())
     private let timeLabel = TimeLabel()
     let slider = UISlider()
+    let sliderControlValue = PassthroughSubject<Float, Never>()
     var timeObserver: Any = ()
     var durationObserver: AnyCancellable? = nil
     var playbackObserver: AnyCancellable? = nil
+    var cancellables: Set<AnyCancellable> = []
     
     init(_ player: AVPlayer) {
         self.player = player
@@ -43,6 +45,28 @@ fileprivate final class Seekbar: UIControl {
         playbackButton.addAction(UIAction { [unowned self] _ in
             onTapPlaybackButton()
         }, for: .primaryActionTriggered)
+        
+        slider.addAction(UIAction { [unowned self] _ in
+            sliderControlValue.send(slider.value)
+        }, for: .primaryActionTriggered)
+        
+        sliderControlValue
+            .throttle(for: 1, scheduler: DispatchQueue.main, latest: false)
+            .sink { [weak self] _ in
+                self?.player.pause()
+            }.store(in: &cancellables)
+        
+        sliderControlValue
+            .debounce(for: 1, scheduler: DispatchQueue.main)
+            .sink { [weak self] value in
+                let time = CMTime(
+                    seconds: Double(value),
+                    preferredTimescale: 600
+                )
+                self?.player.seek(to: time, completionHandler: { [weak self] _ in
+                    self?.player.play()
+                })
+            }.store(in: &cancellables)
         
         addObservePlayback()
         addObserveDuration(player.currentItem!)
@@ -109,8 +133,6 @@ fileprivate final class Seekbar: UIControl {
     func removeObserveTime() {
         player.removeTimeObserver(timeObserver)
     }
-    
-    
 }
 
 extension UIButton.Configuration {
@@ -126,11 +148,11 @@ extension AVPlayer {
 }
 
 fileprivate final class TimeLabel: UILabel {
-    var currentTime: CMTime = .zero {
+    var currentTime: CMTime? = nil {
         didSet { update() }
     }
     
-    var duration: CMTime = .zero {
+    var duration: CMTime? = nil {
         didSet { update() }
     }
     
@@ -138,6 +160,7 @@ fileprivate final class TimeLabel: UILabel {
         super.init(frame: .null)
         font = .monospacedDigitSystemFont(ofSize: 14, weight: .medium)
         textColor = .white
+        update()
     }
     
     required init?(coder: NSCoder) {
@@ -150,7 +173,8 @@ fileprivate final class TimeLabel: UILabel {
         self.text = "\(currentTimeText) / \(durationText)"
     }
     
-    func string(for time: CMTime) -> String {
+    func string(for time: CMTime?) -> String {
+        guard let time else { return "--:--" }
         let duration = time.seconds
         let minutes = Int(duration / 60)
         let seconds = Int(duration.truncatingRemainder(dividingBy: 60))
