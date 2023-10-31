@@ -4,7 +4,7 @@ final class PreviewItemViewController: UIViewController {
     let thumbnailImageView = UIImageView()
     let previewItem: any PreviewItem
     let index: Int
-    var readyToPlayTask: Task<Void, any Error>? = nil
+    var readyToPreviewTask: Task<Void, any Error>? = nil
     
     init(_ previewItem: any PreviewItem, index: Int) {
         self.previewItem = previewItem
@@ -24,8 +24,8 @@ final class PreviewItemViewController: UIViewController {
         thumbnailImageView.backgroundColor = .red
         thumbnailImageView.contentMode = .scaleAspectFit
         
-        readyToPlayTask = Task {
-            _ = try await previewItem.readyToPlay.first(where: { _ in true })
+        readyToPreviewTask = Task {
+            _ = try await previewItem.readyToPreview.first(where: { _ in true })
             view.backgroundColor = .blue
             embed(previewItem.makeViewController())
         }

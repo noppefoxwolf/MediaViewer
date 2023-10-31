@@ -1,5 +1,11 @@
 import UIKit
 import AVKit
+import os
+
+fileprivate let logger = Logger(
+    subsystem: Bundle.main.bundleIdentifier! + ".logger",
+    category: #file
+)
 
 public final class PlayerPreviewItemViewController: UIViewController {
     private let playerView = AVPlayerView()
@@ -24,6 +30,7 @@ public final class PlayerPreviewItemViewController: UIViewController {
     
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        logger.debug("\(#function)")
         player.play()
         navigationController?.topViewController?.toolbarItems = [
             UIBarButtonItem.seekbar(player)
@@ -32,6 +39,7 @@ public final class PlayerPreviewItemViewController: UIViewController {
     
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        logger.debug("\(#function)")
         player.pause()
         navigationController?.topViewController?.toolbarItems = []
     }

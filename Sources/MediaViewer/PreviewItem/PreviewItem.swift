@@ -6,12 +6,7 @@ public protocol PreviewItem {
     associatedtype AsyncSequenceType: AsyncSequence
     func makeViewController() -> ViewControllerType
     func makeActivityItemsConfiguration() -> UIActivityItemsConfigurationReading?
-    var readyToPlay: AsyncSequenceType { get }
-}
-
-public enum ThumbnailResource {
-    case url(URL)
-    case image(UIImage)
+    var readyToPreview: AsyncSequenceType { get }
 }
 
 extension PreviewItem {
@@ -23,7 +18,7 @@ extension UIImage: PreviewItem {
         ImagePreviewItemViewController(image: self)
     }
     
-    public var readyToPlay: AsyncStream<Void> {
+    public var readyToPreview: AsyncStream<Void> {
         AsyncStream<Void>(unfolding: {
             try! await Task.sleep(for: .seconds(2))
         })
@@ -35,9 +30,9 @@ extension AVPlayer: PreviewItem {
         PlayerPreviewItemViewController(player: self)
     }
     
-    public var readyToPlay: some AsyncSequence {
+    public var readyToPreview: some AsyncSequence {
         publisher(for: \.status)
-            .delay(for: 1, scheduler: DispatchQueue.main)
+            .delay(for: 2, scheduler: DispatchQueue.main)
             .filter({ $0 == .readyToPlay })
             .eraseToAnyPublisher()
             .values
