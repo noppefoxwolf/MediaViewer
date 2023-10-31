@@ -122,7 +122,6 @@ extension PreviewController: UIGestureRecognizerDelegate {
     }
 }
 
-
 extension PreviewController: UIPageViewControllerDataSource {
     public func pageViewController(
         _ pageViewController: UIPageViewController,
@@ -185,9 +184,6 @@ extension PreviewController: PageViewControllerUIDelegate {
 }
 
 fileprivate final class Toolbar: UIToolbar {
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        var size = super.sizeThatFits(size)
-        size.height = 100
-        return size
-    }
+    // TODO: self-resizing height
+    // TODO: transparency background when has any item
 }
