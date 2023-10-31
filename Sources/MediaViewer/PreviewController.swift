@@ -133,7 +133,7 @@ extension PreviewController: UIPageViewControllerDataSource {
     ) -> UIViewController? {
         let previewItemViewController = viewController as! PreviewItemViewController
         let beforeIndex = previewItemViewController.index - 1
-        guard beforeIndex > 0 else { return nil }
+        guard beforeIndex >= 0 else { return nil }
         let item = dataSource?.previewController(
             self,
             previewItemAt: beforeIndex

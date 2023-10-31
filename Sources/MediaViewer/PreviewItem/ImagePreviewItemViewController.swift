@@ -12,9 +12,7 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
         super.init(nibName: nil, bundle: nil)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError() }
     
     public override func loadView() {
         view = scrollView
@@ -41,15 +39,12 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
             imageView.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
         ])
         
-        // 画像をセット
         imageView.image = image
         
-        // ダブルタップジェスチャーレコグナイザーを作成し、UIImageViewに追加する
         doubleTapGesture.addTarget(self, action: #selector(handleDoubleTapGesture))
         doubleTapGesture.numberOfTapsRequired = 2
         imageView.addGestureRecognizer(doubleTapGesture)
         
-        // ズームスケールの設定
         scrollView.minimumZoomScale = 1.0
         scrollView.maximumZoomScale = 3.0
         scrollView.zoomScale = 1.0

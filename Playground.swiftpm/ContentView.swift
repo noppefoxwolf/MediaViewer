@@ -55,12 +55,11 @@ class ViewController: UITableViewController {
     }
     
     var items: [any PreviewItem] = [
-        "a",
-        "b",
-        "c",
-        "d",
-        UIImage(named: "image")!,
+        UIImage(named: "image1")!,
+        UIImage(named: "image2")!,
+        UIImage(named: "image3")!,
         AVPlayer(url: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/main.m3u8")!),
+        UIImage(named: "image4")!,
     ]
 }
 
@@ -73,12 +72,3 @@ extension ViewController: PreviewControllerDataSource {
         items[index]
     }
 }
-
-extension String: PreviewItem {
-    public func makeViewController() -> some UIViewController {
-        //ImagePreviewItemViewController()
-        //PlayerPreviewItemViewController()
-        UIHostingController(rootView: Text(self))
-    }
-}
-
