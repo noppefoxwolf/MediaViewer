@@ -1,5 +1,4 @@
 import UIKit
-import QuickLook
 
 public final class PreviewController: WorkaroundNavigationController {
     
@@ -18,10 +17,17 @@ public final class PreviewController: WorkaroundNavigationController {
     public var currentPreviewItemIndex: Int = 0
     
     public func refreshCurrentPreviewItem() {
-        let item = dataSource?.previewController(self, previewItemAt: currentPreviewItemIndex)
+        let item = dataSource?.previewController(
+            self,
+            previewItemAt: currentPreviewItemIndex
+        )
         if let item {
+            let vc = PreviewItemViewController(
+                item,
+                index: currentPreviewItemIndex
+            )
             pageViewController.setViewControllers(
-                [ PreviewItemViewController(item, index: currentPreviewItemIndex) ],
+                [vc],
                 direction: .forward,
                 animated: false
             )
@@ -148,7 +154,8 @@ extension PreviewController: UIPageViewControllerDataSource {
     ) -> UIViewController? {
         let previewItemViewController = viewController as! PreviewItemViewController
         let afterIndex = previewItemViewController.index + 1
-        let itemsCount = dataSource!.numberOfPreviewItems(in: self)
+        let itemsCount = dataSource?.numberOfPreviewItems(in: self)
+        guard let itemsCount else { return nil }
         guard afterIndex < itemsCount else { return nil }
         let item = dataSource?.previewController(
             self,

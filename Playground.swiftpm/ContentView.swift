@@ -58,7 +58,12 @@ class ViewController: UITableViewController {
         UIImage(named: "image1")!,
         UIImage(named: "image2")!,
         UIImage(named: "image3")!,
-        AVPlayer(url: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/main.m3u8")!),
+        {
+            let url = URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/main.m3u8")!
+            let player = AVPlayer(url: url)
+            player.automaticallyWaitsToMinimizeStalling = true
+            return player
+        }(),
         UIImage(named: "image4")!,
     ]
 }

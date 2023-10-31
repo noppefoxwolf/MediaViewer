@@ -1,22 +1,33 @@
 import UIKit
 
 final class PreviewItemViewController: UIViewController {
-    let contentViewController: UIViewController
+    let thumbnailImageView = UIImageView()
+    let previewItem: any PreviewItem
     let index: Int
+    var readyToPlayTask: Task<Void, any Error>? = nil
     
     init(_ previewItem: any PreviewItem, index: Int) {
-        self.contentViewController = previewItem.makeViewController()
+        self.previewItem = previewItem
         self.index = index
         super.init(nibName: nil, bundle: nil)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    required init?(coder: NSCoder) { fatalError() }
+    
+    override func loadView() {
+        view = thumbnailImageView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        embed(contentViewController)
+        thumbnailImageView.backgroundColor = .red
+        thumbnailImageView.contentMode = .scaleAspectFit
+        
+        readyToPlayTask = Task {
+            _ = try await previewItem.readyToPlay.first(where: { _ in true })
+            view.backgroundColor = .blue
+            embed(previewItem.makeViewController())
+        }
     }
 }
