@@ -20,13 +20,12 @@ final class PreviewItemViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.isUserInteractionEnabled = true
         
-        thumbnailImageView.backgroundColor = .red
         thumbnailImageView.contentMode = .scaleAspectFit
         
         readyToPreviewTask = Task {
             _ = try await previewItem.readyToPreview.first(where: { _ in true })
-            view.backgroundColor = .blue
             embed(previewItem.makeViewController())
         }
     }

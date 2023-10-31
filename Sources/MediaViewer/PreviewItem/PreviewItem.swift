@@ -19,9 +19,7 @@ extension UIImage: PreviewItem {
     }
     
     public var readyToPreview: AsyncStream<Void> {
-        AsyncStream<Void>(unfolding: {
-            try! await Task.sleep(for: .seconds(2))
-        })
+        AsyncStream<Void>(unfolding: {})
     }
 }
 
@@ -32,7 +30,6 @@ extension AVPlayer: PreviewItem {
     
     public var readyToPreview: some AsyncSequence {
         publisher(for: \.status)
-            .delay(for: 2, scheduler: DispatchQueue.main)
             .filter({ $0 == .readyToPlay })
             .eraseToAnyPublisher()
             .values
