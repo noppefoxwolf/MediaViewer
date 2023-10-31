@@ -50,6 +50,7 @@ class ViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = PreviewController()
+        vc.delegate = self
         vc.dataSource = self
         vc.currentPreviewItemIndex = 2
         present(vc, animated: true)
@@ -76,5 +77,15 @@ extension ViewController: PreviewControllerDataSource {
     
     func previewController(_ controller: PreviewController, previewItemAt index: Int) -> any PreviewItem {
         items[index]
+    }
+}
+
+extension ViewController: PreviewControllerDelegate {
+    func previewController(_ controller: PreviewController, frameFor item: any PreviewItem) -> CGRect {
+        .zero
+    }
+    
+    func previewController(_ controller: PreviewController, transitionViewFor item: any PreviewItem) -> UIView? {
+        nil
     }
 }

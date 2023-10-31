@@ -2,6 +2,7 @@ import UIKit
 
 open class WorkaroundNavigationController: UINavigationController {
     
+    // workaround: always use hidesBarsOnTap
     private let tapGesture = UITapGestureRecognizer()
     open override var hidesBarsOnTap: Bool {
         get {
@@ -20,6 +21,7 @@ open class WorkaroundNavigationController: UINavigationController {
         setNavigationBarHidden(!isNavigationBarHidden, animated: true)
     }
     
+    // workaround: No re-layout when navigation bar is hidden
     private var _isNavigationBarHidden: Bool = false
     public override var isNavigationBarHidden: Bool {
         get { _isNavigationBarHidden }
@@ -43,14 +45,14 @@ open class WorkaroundNavigationController: UINavigationController {
         } else {
             toTransform = .identity
         }
-        UIView.animate(
-            withDuration: UINavigationController.hideShowBarDuration,
-            delay: 0,
-            options: .beginFromCurrentState,
-            animations: { [unowned self] in
-                navigationBar.transform = toTransform
-            }
+        let animator = UIViewPropertyAnimator(
+            duration: UINavigationController.hideShowBarDuration,
+            curve: .easeInOut
         )
+        animator.addAnimations { [weak self] in
+            self?.navigationBar.transform = toTransform
+        }
+        animator.startAnimation()
     }
     
     public override func setToolbarHidden(_ hidden: Bool, animated: Bool) {
@@ -64,13 +66,13 @@ open class WorkaroundNavigationController: UINavigationController {
         } else {
             toTransform = .identity
         }
-        UIView.animate(
-            withDuration: UINavigationController.hideShowBarDuration,
-            delay: 0,
-            options: .beginFromCurrentState,
-            animations: { [unowned self] in
-                toolbar.transform = toTransform
-            }
+        let animator = UIViewPropertyAnimator(
+            duration: UINavigationController.hideShowBarDuration,
+            curve: .easeInOut
         )
+        animator.addAnimations { [weak self] in
+            self?.toolbar.transform = toTransform
+        }
+        animator.startAnimation()
     }
 }

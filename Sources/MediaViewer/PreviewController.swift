@@ -1,10 +1,16 @@
 import UIKit
 
-public final class PreviewController: WorkaroundNavigationController {
+public final class PreviewController: UIViewController {
     
     private let presenter = Presenter()
     
     public weak var dataSource: PreviewControllerDataSource? = nil
+    public weak var delegate: PreviewControllerDelegate? = nil
+    
+    let internalNavigationController = NavigationController(
+        navigationBarClass: UINavigationBar.self,
+        toolbarClass: Toolbar.self
+    )
     
     var wasToolbarHidden: Bool = false
     
@@ -17,6 +23,7 @@ public final class PreviewController: WorkaroundNavigationController {
     public var currentPreviewItemIndex: Int = 0
     
     public func refreshCurrentPreviewItem() {
+        
         let item = dataSource?.previewController(
             self,
             previewItemAt: currentPreviewItemIndex
@@ -35,10 +42,7 @@ public final class PreviewController: WorkaroundNavigationController {
     }
     
     public init() {
-        super.init(
-            navigationBarClass: UINavigationBar.self,
-            toolbarClass: Toolbar.self
-        )
+        super.init(nibName: nil, bundle: nil)
         transitioningDelegate = presenter
         modalPresentationStyle = .custom
     }
@@ -48,19 +52,9 @@ public final class PreviewController: WorkaroundNavigationController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
-        setViewControllers([pageViewController], animated: false)
-        setNavigationBarHidden(false, animated: false)
-        setToolbarHidden(false, animated: false)
         
-        navigationBar.standardAppearance.configureWithTransparentBackground()
-        navigationBar.tintColor = .white
-        
-        toolbar.standardAppearance = UIToolbarAppearance()
-        toolbar.standardAppearance.configureWithTransparentBackground()
-        toolbar.tintColor = .white
-        
-        hidesBarsOnTap = true
-        
+        embed(internalNavigationController)
+        internalNavigationController.setViewControllers([pageViewController], animated: false)
         refreshCurrentPreviewItem()
         pageViewController.delegate = self
         pageViewController.dataSource = self
@@ -77,9 +71,8 @@ public final class PreviewController: WorkaroundNavigationController {
         switch gesture.state {
         case .began:
             presenter.interactiveTransition = InteractiveTransition()
-            wasToolbarHidden = isToolbarHidden
-            setNavigationBarHidden(true, animated: true)
-            setToolbarHidden(true, animated: true)
+            wasToolbarHidden = internalNavigationController.isToolbarHidden
+            internalNavigationController.setBarHidden(true, animated: true)
             dismiss(animated: true)
         case .changed:
             let percentComplete = translation.y / gesture.view!.bounds.height
@@ -106,14 +99,12 @@ public final class PreviewController: WorkaroundNavigationController {
             } else {
                 presenter.interactiveTransition?.cancel()
                 presenter.interactiveTransition = nil
-                setNavigationBarHidden(wasToolbarHidden, animated: true)
-                setToolbarHidden(wasToolbarHidden, animated: true)
+                internalNavigationController.setBarHidden(wasToolbarHidden, animated: true)
             }
         case .cancelled, .failed:
             presenter.interactiveTransition?.cancel()
             presenter.interactiveTransition = nil
-            setNavigationBarHidden(wasToolbarHidden, animated: true)
-            setToolbarHidden(wasToolbarHidden, animated: true)
+            internalNavigationController.setBarHidden(wasToolbarHidden, animated: true)
         default:
             break
         }
@@ -177,8 +168,8 @@ extension PreviewController: UIPageViewControllerDelegate {
 
 extension PreviewController: PageViewControllerUIDelegate {
     func dismissActionTriggered() {
-        setNavigationBarHidden(true, animated: true)
-        setToolbarHidden(true, animated: true)
+        internalNavigationController.setNavigationBarHidden(true, animated: true)
+        internalNavigationController.setToolbarHidden(true, animated: true)
         dismiss(animated: true)
     }
     
