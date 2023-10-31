@@ -76,7 +76,7 @@ public final class PreviewController: WorkaroundNavigationController {
         let translation = gesture.translation(in: gesture.view)
         switch gesture.state {
         case .began:
-            presenter.interactor = Interactor()
+            presenter.interactiveTransition = InteractiveTransition()
             wasToolbarHidden = isToolbarHidden
             setNavigationBarHidden(true, animated: true)
             setToolbarHidden(true, animated: true)
@@ -85,33 +85,33 @@ public final class PreviewController: WorkaroundNavigationController {
             let percentComplete = translation.y / gesture.view!.bounds.height
             if percentComplete < 0 {
                 if !presenter.reversedDismiss {
-                    presenter.interactor?.cancel()
-                    presenter.interactor = Interactor()
+                    presenter.interactiveTransition?.cancel()
+                    presenter.interactiveTransition = InteractiveTransition()
                     presenter.reversedDismiss.toggle()
                     dismiss(animated: true)
                 }
             } else {
                 if presenter.reversedDismiss {
-                    presenter.interactor?.cancel()
-                    presenter.interactor = Interactor()
+                    presenter.interactiveTransition?.cancel()
+                    presenter.interactiveTransition = InteractiveTransition()
                     presenter.reversedDismiss.toggle()
                     dismiss(animated: true)
                 }
             }
-            presenter.interactor?.update(abs(percentComplete))
+            presenter.interactiveTransition?.update(abs(percentComplete))
         case .ended:
             if abs(translation.y) > 60 {
-                presenter.interactor?.finish()
-                presenter.interactor = nil
+                presenter.interactiveTransition?.finish()
+                presenter.interactiveTransition = nil
             } else {
-                presenter.interactor?.cancel()
-                presenter.interactor = nil
+                presenter.interactiveTransition?.cancel()
+                presenter.interactiveTransition = nil
                 setNavigationBarHidden(wasToolbarHidden, animated: true)
                 setToolbarHidden(wasToolbarHidden, animated: true)
             }
         case .cancelled, .failed:
-            presenter.interactor?.cancel()
-            presenter.interactor = nil
+            presenter.interactiveTransition?.cancel()
+            presenter.interactiveTransition = nil
             setNavigationBarHidden(wasToolbarHidden, animated: true)
             setToolbarHidden(wasToolbarHidden, animated: true)
         default:

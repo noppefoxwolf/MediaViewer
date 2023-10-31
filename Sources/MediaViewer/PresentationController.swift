@@ -15,13 +15,17 @@ final class PresentationController: UIPresentationController {
         presentedView?.frame = frameOfPresentedViewInContainerView
     }
     
+    var transitionView: UIView? = nil
     override func presentationTransitionWillBegin() {
-        containerView!.backgroundColor = .clear
+        transitionView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        transitionView!.backgroundColor = .red
+        containerView!.addSubview(transitionView!)
     }
     
     override func presentationTransitionDidEnd(_ completed: Bool) {
         if completed {
             containerView!.addSubview(presentedView!)
+            transitionView?.removeFromSuperview()
         }
     }
     

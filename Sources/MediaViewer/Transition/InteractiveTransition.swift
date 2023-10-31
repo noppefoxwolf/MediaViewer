@@ -1,6 +1,6 @@
 import UIKit
 
-final class Interactor: UIPercentDrivenInteractiveTransition {
+final class InteractiveTransition: UIPercentDrivenInteractiveTransition {
     override init() {
         super.init()
         completionCurve = .linear
