@@ -20,7 +20,27 @@ dependencies: [
 
 ## Usage
 
+### PreviewItem
+
+The ﻿`PreviewItem` is a protocol that provides the behavior necessary for previewing.
+`UIImage` and `AVPlayer` have built-in implementations. It can also be customized. 
+
+```swift
+extension UIImage: PreviewItem {
+    public func makeViewController() -> UIViewController {
+        UIHostingController(rootView: Image(uiimage: self))
+    }
+    
+    public func makeThumbnailImage() async -> UIImage? {
+        self
+    }
+}
+```
+
 ### PreviewController
+
+`PreviewItem` are displayed using `PreviewController`.
+`PreviewController` uses a `PreviewControllerDataSource` to retrieve `PreviewItem`.
 
 ```swift
 let vc = PreviewController()
@@ -28,17 +48,6 @@ vc.delegate = self
 vc.dataSource = self
 present(vc, animated: true)
 ```
-
-### PreviewItem
-
-The ﻿`PreviewItem` is a protocol that provides the behavior necessary for previewing. 
-
-```swift
-
-```
-
-- UIImage
-- AVPlayer
 
 ### PreviewControllerDataSource
 
@@ -49,5 +58,8 @@ func previewController(_ controller: PreviewController, previewItemAt index: Int
 
 ### PreviewControllerDelegate
 
+`PreviewControllerDelegate` supports animations on transitions.
+
 ```swift
+func previewController(_ controller: PreviewController, transitionViewFor item: any PreviewItem) -> UIView?
 ```
