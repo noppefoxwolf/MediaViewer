@@ -1,10 +1,8 @@
 import UIKit
 
 final class PreviewItemViewController: UIViewController {
-    let thumbnailImageView = UIImageView()
     let previewItem: any PreviewItem
     let index: Int
-    var thumbnailTask: Task<Void, any Error>? = nil
     var readyToPreviewTask: Task<Void, any Error>? = nil
     
     init(_ previewItem: any PreviewItem, index: Int) {
@@ -15,26 +13,20 @@ final class PreviewItemViewController: UIViewController {
     
     required init?(coder: NSCoder) { fatalError() }
     
-    override func loadView() {
-        view = thumbnailImageView
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.isUserInteractionEnabled = true
+        view.backgroundColor = .clear
         
-        thumbnailImageView.contentMode = .scaleAspectFit
-        
-        thumbnailTask = Task {
-            let image = await previewItem.makeThumbnailImage()
-            thumbnailImageView.image = image
+        let thumbnailVC = previewItem.makeThumbnailViewController()
+        if let thumbnailVC {
+            embed(thumbnailVC)
         }
         
         readyToPreviewTask = Task {
-            _ = try await previewItem.readyToPreview.first(where: { _ in true })
-            thumbnailTask?.cancel()
-            thumbnailImageView.image = nil
-            embed(previewItem.makeViewController())
+            let contentVC = await previewItem.makeViewController()
+            thumbnailVC?.digup()
+            embed(contentVC)
         }
     }
 }

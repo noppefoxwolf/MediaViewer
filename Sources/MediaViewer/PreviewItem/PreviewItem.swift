@@ -1,16 +1,12 @@
 import UIKit
 
 public protocol PreviewItem {
-    associatedtype AsyncSequenceType: AsyncSequence
-    func makeViewController() -> UIViewController
-    func makeThumbnailImage() async -> UIImage?
+    @MainActor
+    func makeViewController() async -> UIViewController
+    func makeThumbnailViewController() -> UIViewController?
     func makeActivityItemsConfiguration() -> UIActivityItemsConfigurationReading?
-    var readyToPreview: AsyncSequenceType { get }
 }
 
 extension PreviewItem {
     public func makeActivityItemsConfiguration() -> UIActivityItemsConfigurationReading? { nil }
-    public var readyToPreview: some AsyncSequence {
-        AsyncStream(unfolding: {})
-    }
 }

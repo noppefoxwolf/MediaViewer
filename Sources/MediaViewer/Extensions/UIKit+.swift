@@ -14,6 +14,13 @@ extension UIViewController {
             view.rightAnchor.constraint(equalTo: viewController.view.rightAnchor),
         ])
     }
+    
+    func digup() {
+        willMove(toParent: nil)
+        view.removeFromSuperview()
+        removeFromParent()
+        didMove(toParent: nil)
+    }
 }
 
 extension UIImage {

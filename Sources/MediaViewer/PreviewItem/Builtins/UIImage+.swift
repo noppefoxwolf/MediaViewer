@@ -1,11 +1,11 @@
 import UIKit
 
 extension UIImage: PreviewItem {
-    public func makeViewController() -> UIViewController {
+    public func makeViewController() async -> UIViewController {
         ImagePreviewItemViewController(image: self)
     }
     
-    public func makeThumbnailImage() async -> UIImage? {
-        self
+    public func makeThumbnailViewController() -> UIViewController? {
+        ThumbnailViewController(unfolding: { self })
     }
 }
