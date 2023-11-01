@@ -29,6 +29,9 @@ let package = Package(
                 .landscapeRight,
                 .landscapeLeft,
                 .portraitUpsideDown(.when(deviceFamilies: [.pad]))
+            ],
+            capabilities: [
+                .photoLibrary(purposeString: "Save image and video")
             ]
         )
     ],

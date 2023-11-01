@@ -30,11 +30,11 @@ It can also be customized.
 
 ```swift
 extension String: PreviewItem {
-    public func makeViewController() -> UIViewController {
+    public func makeViewController() async -> UIViewController {
         UIHostingController(rootView: Text(self))
     }
     
-    public func makeThumbnailImage() async -> UIImage? {
+    func makeThumbnailViewController() -> UIViewController? {
         nil
     }
 }

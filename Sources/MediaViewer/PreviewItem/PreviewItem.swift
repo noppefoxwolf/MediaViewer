@@ -9,5 +9,7 @@ public protocol PreviewItem {
 }
 
 extension PreviewItem {
-    public func makeActivityItemsConfiguration() -> UIActivityItemsConfigurationReading? { nil }
+    public func makeActivityItemsConfiguration() -> UIActivityItemsConfigurationReading? {
+        nil
+    }
 }
