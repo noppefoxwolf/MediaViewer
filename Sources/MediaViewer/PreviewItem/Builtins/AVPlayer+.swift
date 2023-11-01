@@ -44,7 +44,6 @@ extension AVPlayer: PreviewItem {
     public var readyToPreview: some AsyncSequence {
         publisher(for: \.status)
             .filter({ $0 == .readyToPlay })
-            .delay(for: 5, scheduler: DispatchQueue.main)
             .eraseToAnyPublisher()
             .values
     }

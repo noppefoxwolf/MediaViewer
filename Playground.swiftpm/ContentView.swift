@@ -48,7 +48,7 @@ class ViewController: UICollectionViewController {
                         }
                         .clipped()
                 case .player(let aVPlayer):
-                    Color.red
+                    Color.black
                 }
             })
         }
