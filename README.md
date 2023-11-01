@@ -1,5 +1,7 @@
 # MediaViewer
 
+![](https://github.com/noppefoxwolf/MediaViewer/blob/main/.github/example.gif)
+
 ## Features
 
 - [x] No dependencies
