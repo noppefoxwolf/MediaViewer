@@ -23,16 +23,17 @@ dependencies: [
 ### PreviewItem
 
 The ﻿`PreviewItem` is a protocol that provides the behavior necessary for previewing.
-`UIImage` and `AVPlayer` have built-in implementations. It can also be customized. 
+`UIImage` and `AVPlayer` have built-in implementations. 
+It can also be customized. 
 
 ```swift
-extension UIImage: PreviewItem {
+extension String: PreviewItem {
     public func makeViewController() -> UIViewController {
-        UIHostingController(rootView: Image(uiimage: self))
+        UIHostingController(rootView: Text(self))
     }
     
     public func makeThumbnailImage() async -> UIImage? {
-        self
+        nil
     }
 }
 ```
