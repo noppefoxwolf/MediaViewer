@@ -8,11 +8,11 @@ public protocol PreviewItem {
     func makeThumbnailViewController() -> UIViewController?
     
     @MainActor
-    func makeActivityItemsConfiguration() -> UIActivityItemsConfigurationReading?
+    func makeActivityItemsConfiguration() -> (any UIActivityItemsConfigurationReading)?
 }
 
 extension PreviewItem {
-    public func makeActivityItemsConfiguration() -> UIActivityItemsConfigurationReading? {
+    public func makeActivityItemsConfiguration() -> (any UIActivityItemsConfigurationReading)? {
         nil
     }
 }
