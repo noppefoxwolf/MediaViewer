@@ -2,7 +2,6 @@ import SwiftUI
 import AVFoundation
 import UIKit
 import MediaViewer
-import QuickLook
 
 struct ContentView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> some UIViewController {
@@ -10,82 +9,120 @@ struct ContentView: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        QLPreviewController()
     }
 }
+
+import UIKit
 
 enum Section: Int {
     case items
 }
 
-struct Item: Hashable {
-    let id: UUID = UUID()
+enum Item: Hashable {
+    case image(UIImage)
+    case player(AVPlayer)
 }
 
-class ViewController: UITableViewController {
-    lazy var dataSource = UITableViewDiffableDataSource<Section, Item>(
-        tableView: tableView,
-        cellProvider: { [unowned self] (tableView, indexPath, item) in
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+extension Item {
+    func makePreviewItem() -> any PreviewItem {
+        switch self {
+        case .image(let image):
+            return image
+        case .player(let player):
+            return player
+        }
+    }
+}
+
+class ViewController: UICollectionViewController {
+    let cellRegistration = UICollectionView.CellRegistration(
+        handler: { (cell: UICollectionViewCell, indexPath, item: Item) in
             cell.contentConfiguration = UIHostingConfiguration(content: {
-                Text("open MediaViewer")
+                switch item {
+                case .image(let image):
+                    Color.clear
+                        .overlay {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                        }
+                        .clipped()
+                case .player(let aVPlayer):
+                    Color.red
+                }
             })
-            return cell
+        }
+    )
+    
+    lazy var dataSource = UICollectionViewDiffableDataSource<Section, Item>(
+        collectionView: collectionView,
+        cellProvider: { [unowned self] (collectionView, indexPath, item) in
+            collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: item)
         }
     )
     
     var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
     
+    init() {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
+        layout.itemSize = CGSize(width: 200, height: 200)
+        super.init(collectionViewLayout: layout)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        _ = dataSource
+        collectionView.dataSource = dataSource
         
         snapshot.appendSections([.items])
-        snapshot.appendItems((0..<1).map({ _ in Item() }), toSection: .items)
+        snapshot.appendItems([
+            Item.image(UIImage(named: "image1")!),
+            Item.image(UIImage(named: "image2")!),
+            Item.image(UIImage(named: "image3")!),
+            Item.image(UIImage(named: "image4")!),
+            Item.player({
+                let url = URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/main.m3u8")!
+                let player = AVPlayer(url: url)
+                player.automaticallyWaitsToMinimizeStalling = true
+                return player
+            }()),
+        ], toSection: .items)
         
         dataSource.apply(snapshot)
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let vc = PreviewController()
         vc.delegate = self
         vc.dataSource = self
-        vc.currentPreviewItemIndex = 2
+        vc.currentPreviewItemIndex = indexPath.row
         present(vc, animated: true)
     }
-    
-    var items: [any PreviewItem] = [
-        UIImage(named: "image1")!,
-        UIImage(named: "image2")!,
-        UIImage(named: "image3")!,
-        {
-            let url = URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/main.m3u8")!
-            let player = AVPlayer(url: url)
-            player.automaticallyWaitsToMinimizeStalling = true
-            return player
-        }(),
-        UIImage(named: "image4")!,
-    ]
 }
 
 extension ViewController: PreviewControllerDataSource {
     func numberOfPreviewItems(in controller: PreviewController) -> Int {
-        items.count
+        dataSource.collectionView(collectionView, numberOfItemsInSection: 0)
     }
     
     func previewController(_ controller: PreviewController, previewItemAt index: Int) -> any PreviewItem {
-        items[index]
+        let item = dataSource.itemIdentifier(for: IndexPath(row: index, section: 0))!
+        return item.makePreviewItem()
     }
 }
 
 extension ViewController: PreviewControllerDelegate {
-    func previewController(_ controller: PreviewController, frameFor item: any PreviewItem) -> CGRect {
-        .zero
-    }
-    
-    func previewController(_ controller: PreviewController, transitionViewFor item: any PreviewItem) -> UIView? {
-        nil
+    func previewController(
+        _ controller: PreviewController,
+        transitionViewFor item: any PreviewItem
+    ) -> UIView? {
+        let indexPath = collectionView.indexPathsForSelectedItems!.first!
+        return collectionView.cellForItem(at: indexPath)
     }
 }
+

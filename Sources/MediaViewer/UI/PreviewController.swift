@@ -22,6 +22,10 @@ public final class PreviewController: UIViewController {
     
     public var currentPreviewItemIndex: Int = 0
     
+    public var currentPreviewItem: (any PreviewItem)? {
+        dataSource?.previewController(self, previewItemAt: currentPreviewItemIndex)
+    }
+    
     public func refreshCurrentPreviewItem() {
         
         let item = dataSource?.previewController(
@@ -52,7 +56,6 @@ public final class PreviewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
-        
         embed(internalNavigationController)
         internalNavigationController.setViewControllers([pageViewController], animated: false)
         refreshCurrentPreviewItem()
@@ -180,6 +183,20 @@ extension PreviewController: PageViewControllerUIDelegate {
             activityItemsConfiguration: configuration
         )
         present(vc, animated: true)
+    }
+}
+
+// MARK: utils
+extension PreviewController {
+    internal var currentTransitionView: UIView? {
+        guard let currentPreviewItem else { return nil }
+        return delegate?.previewController(self, transitionViewFor: currentPreviewItem)
+    }
+    
+    internal var topView: UIView? {
+        internalNavigationController
+            .topViewController?
+            .view
     }
 }
 
