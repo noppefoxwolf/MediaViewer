@@ -191,6 +191,7 @@ extension PreviewController: PageViewControllerUIDelegate {
         let vc = UIActivityViewController(
             activityItemsConfiguration: configuration
         )
+        vc.popoverPresentationController?.sourceItem = pageViewController.navigationItem.rightBarButtonItem
         present(vc, animated: true)
     }
 }
