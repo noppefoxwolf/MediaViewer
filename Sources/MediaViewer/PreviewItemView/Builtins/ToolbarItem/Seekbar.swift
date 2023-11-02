@@ -69,7 +69,11 @@ fileprivate final class Seekbar: UIControl {
             }.store(in: &cancellables)
         
         addObservePlayback()
-        addObserveDuration(player.currentItem!)
+        
+        player.publisher(for: \.currentItem).sink { [weak self] currentItem in
+            self?.addObserveDuration(currentItem)
+        }.store(in: &cancellables)
+        
     }
     
     override func didMoveToSuperview() {
@@ -98,14 +102,21 @@ fileprivate final class Seekbar: UIControl {
         }
     }
     
-    func addObserveDuration(_ item: AVPlayerItem) {
-        durationObserver = item.publisher(for: \.duration).sink { [weak self] time in
-            let maximumValue = Float(time.seconds)
-            if maximumValue.isNormal {
-                self?.slider.maximumValue = maximumValue
-                self?.timeLabel.duration = time
+    func addObserveDuration(_ item: AVPlayerItem?) {
+        if let item {
+            durationObserver = item.publisher(for: \.duration).sink { [weak self] time in
+                let maximumValue = Float(time.seconds)
+                if maximumValue.isNormal {
+                    self?.slider.maximumValue = maximumValue
+                    self?.timeLabel.duration = time
+                }
             }
+        } else {
+            durationObserver = nil
+            slider.maximumValue = 0
+            timeLabel.duration = nil
         }
+        
     }
     
     func addObserveTime() {
