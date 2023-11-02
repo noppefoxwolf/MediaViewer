@@ -67,6 +67,10 @@ public final class PreviewController: UIViewController {
         panGesture.delegate = self
         panGesture.addTarget(self, action: #selector(onPan))
         view.addGestureRecognizer(panGesture)
+        
+        let longPressGesture = UILongPressGestureRecognizer()
+        longPressGesture.addTarget(self, action: #selector(onLongPress))
+        view.addGestureRecognizer(longPressGesture)
     }
     
     @objc private func onPan(_ gesture: UIPanGestureRecognizer) {
@@ -111,6 +115,11 @@ public final class PreviewController: UIViewController {
         default:
             break
         }
+    }
+    
+    @objc private func onLongPress(_ gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .began else { return }
+        presentActivityActionTriggered()
     }
 }
 
