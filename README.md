@@ -70,7 +70,7 @@ func previewController(_ controller: PreviewController, transitionViewFor item: 
 ## Apps Using
 
 <p float="left">
-    <a href="https://apps.apple.com/app/id1668645019"><img src="" height="65"></a>
+    <a href="https://apps.apple.com/app/id1668645019"><img src="https://github.com/noppefoxwolf/MediaViewer/blob/main/.github/dawn.png" height="65"></a>
 </p>
 
 If you use a MediaViewer, add your app via Pull Request.
