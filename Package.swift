@@ -18,7 +18,7 @@ let package = Package(
     targets: [
         .target(
             name: "MediaViewer",
-            resources: [.copy("PrivacyInfo.xcprivacy")]
+            resources: [.copy("Resources/PrivacyInfo.xcprivacy")]
         ),
         .testTarget(
             name: "MediaViewerTests",
