@@ -1,6 +1,6 @@
 import UIKit
 
-public final class PreviewController: UIViewController {
+open class PreviewController: UIViewController {
     
     private let presenter = Presenter()
     
@@ -51,9 +51,9 @@ public final class PreviewController: UIViewController {
         modalPresentationStyle = .custom
     }
     
-    required init?(coder: NSCoder) { fatalError() }
+    public required init?(coder: NSCoder) { fatalError() }
     
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
         embed(internalNavigationController)
