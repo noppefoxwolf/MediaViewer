@@ -19,19 +19,19 @@ final class Presenter: NSObject, UIViewControllerTransitioningDelegate {
         forPresented presented: UIViewController,
         presenting: UIViewController,
         source: UIViewController
-    ) -> UIViewControllerAnimatedTransitioning? {
+    ) -> (any UIViewControllerAnimatedTransitioning)? {
         PresentAnimator()
     }
     
     func animationController(
         forDismissed dismissed: UIViewController
-    ) -> UIViewControllerAnimatedTransitioning? {
+    ) -> (any UIViewControllerAnimatedTransitioning)? {
         reversedDismiss ? ReversedDismissAnimator() : DismissAnimator()
     }
     
     func interactionControllerForDismissal(
-        using animator: UIViewControllerAnimatedTransitioning
-    ) -> UIViewControllerInteractiveTransitioning? {
+        using animator: any UIViewControllerAnimatedTransitioning
+    ) -> (any UIViewControllerInteractiveTransitioning)? {
         interactiveTransition
     }
 }

@@ -2,8 +2,8 @@ import UIKit
 
 final class ReversedDismissAnimator: Animator {
     override func interruptibleAnimator(
-        using transitionContext: UIViewControllerContextTransitioning
-    ) -> UIViewImplicitlyAnimating {
+        using transitionContext: any UIViewControllerContextTransitioning
+    ) -> any UIViewImplicitlyAnimating {
         let previewController = transitionContext.viewController(forKey: .from) as! PreviewController
         let animator = UIViewPropertyAnimator(
             duration: transitionDuration(using: transitionContext),

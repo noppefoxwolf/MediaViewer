@@ -1,12 +1,13 @@
 import UIKit
 
+@MainActor
 protocol PageViewControllerUIDelegate: AnyObject {
     func dismissActionTriggered()
     func presentActivityActionTriggered()
 }
 
 final class PageViewController: UIPageViewController {
-    weak var uiDelegate: PageViewControllerUIDelegate? = nil
+    weak var uiDelegate: (any PageViewControllerUIDelegate)? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()

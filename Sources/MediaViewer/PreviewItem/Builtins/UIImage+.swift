@@ -9,7 +9,7 @@ extension UIImage: PreviewItem {
         ThumbnailViewController(unfolding: { self })
     }
     
-    public func makeActivityItemsConfiguration() -> UIActivityItemsConfigurationReading? {
+    public func makeActivityItemsConfiguration() -> (any UIActivityItemsConfigurationReading)? {
         let configuration = UIActivityItemsConfiguration(objects: [self])
         configuration.previewProvider = { (_, _, _) in
             NSItemProvider(object: self)

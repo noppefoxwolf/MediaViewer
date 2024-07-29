@@ -21,7 +21,11 @@ enum Section: Int {
 enum Item: Hashable {
     case image(UIImage)
     case player(AVPlayer)
-    case text(String)
+    case text(TextItem)
+}
+
+struct TextItem: Sendable, Equatable, Hashable {
+    let text: String
 }
 
 extension Item {
@@ -31,8 +35,8 @@ extension Item {
             return image
         case .player(let player):
             return player
-        case .text(let text):
-            return text
+        case .text(let textItem):
+            return textItem
         }
     }
 }
@@ -52,8 +56,8 @@ class ViewController: UICollectionViewController {
                         .clipped()
                 case .player(let aVPlayer):
                     Color.black
-                case .text(let text):
-                    Text(text)
+                case .text(let textItem):
+                    Text(textItem.text)
                 }
             })
         }
@@ -96,7 +100,7 @@ class ViewController: UICollectionViewController {
                 player.automaticallyWaitsToMinimizeStalling = true
                 return player
             }()),
-            Item.text("Hello, World!")
+            Item.text(TextItem(text: "Hello, World!"))
         ], toSection: .items)
         
         dataSource.apply(snapshot)

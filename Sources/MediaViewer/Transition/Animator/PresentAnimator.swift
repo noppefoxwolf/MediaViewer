@@ -2,8 +2,8 @@ import UIKit
 
 final class PresentAnimator: Animator {
     override func interruptibleAnimator(
-        using transitionContext: UIViewControllerContextTransitioning
-    ) -> UIViewImplicitlyAnimating {
+        using transitionContext: any UIViewControllerContextTransitioning
+    ) -> any UIViewImplicitlyAnimating {
         let previewController = transitionContext.viewController(forKey: .to) as! PreviewController
         
         let duration = transitionDuration(using: transitionContext)

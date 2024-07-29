@@ -128,10 +128,12 @@ fileprivate final class Seekbar: UIControl {
             forInterval: interval,
             queue: DispatchQueue.main,
             using: { [weak self] time in
-                let value = Float(time.seconds)
-                if value.isNormal {
-                    self?.slider.setValue(value, animated: false)
-                    self?.timeLabel.currentTime = time
+                MainActor.assumeIsolated {
+                    let value = Float(time.seconds)
+                    if value.isNormal {
+                        self?.slider.setValue(value, animated: false)
+                        self?.timeLabel.currentTime = time
+                    }
                 }
             }
         )

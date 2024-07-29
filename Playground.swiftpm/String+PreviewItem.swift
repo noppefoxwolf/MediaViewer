@@ -2,11 +2,11 @@ import UIKit
 import MediaViewer
 import SwiftUI
 
-extension String: PreviewItem {
+extension TextItem: PreviewItem {
     public func makeViewController() async -> UIViewController {
         try! await Task.sleep(for: .seconds(3))
         let vc = UIHostingController(rootView: Group {
-            Text(self)
+            Text(text)
                 .foregroundColor(.black)
                 .background(.white)
         })

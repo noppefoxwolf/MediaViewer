@@ -4,8 +4,8 @@ open class PreviewController: UIViewController {
     
     private let presenter = Presenter()
     
-    public weak var dataSource: PreviewControllerDataSource? = nil
-    public weak var delegate: PreviewControllerDelegate? = nil
+    public weak var dataSource: (any PreviewControllerDataSource)? = nil
+    public weak var delegate: (any PreviewControllerDelegate)? = nil
     
     let internalNavigationController = NavigationController(
         navigationBarClass: UINavigationBar.self,
