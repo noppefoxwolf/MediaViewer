@@ -4,7 +4,7 @@ open class Animator: NSObject, UIViewControllerAnimatedTransitioning {
     open func transitionDuration(
         using transitionContext: UIViewControllerContextTransitioning?
     ) -> TimeInterval {
-        CATransaction.animationDuration()
+        0.46
     }
     
     open func animateTransition(

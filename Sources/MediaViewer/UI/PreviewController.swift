@@ -20,6 +20,11 @@ open class PreviewController: UIViewController {
         options: [.interPageSpacing : UIStackView.spacingUseSystem]
     )
     
+    // override navigation item to route to the page view controller's navigation item
+    open override var navigationItem: UINavigationItem {
+        pageViewController.navigationItem
+    }
+    
     public var currentPreviewItemIndex: Int = 0
     
     public var currentPreviewItem: (any PreviewItem)? {
@@ -42,6 +47,8 @@ open class PreviewController: UIViewController {
                 direction: .forward,
                 animated: false
             )
+            navigationItem.title = item.title
+            delegate?.previewController(self, didMoveTo: item)
         }
     }
     
@@ -57,6 +64,10 @@ open class PreviewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .clear
         embed(internalNavigationController)
+        edgesForExtendedLayout = [.top, .bottom]
+        extendedLayoutIncludesOpaqueBars = true
+        pageViewController.edgesForExtendedLayout = [.top, .bottom]
+        pageViewController.extendedLayoutIncludesOpaqueBars = true
         internalNavigationController.setViewControllers([pageViewController], animated: false)
         refreshCurrentPreviewItem()
         pageViewController.delegate = self
@@ -173,6 +184,10 @@ extension PreviewController: UIPageViewControllerDelegate {
         let currentViewController = pageViewController.viewControllers?.first as? PreviewItemViewController
         if let currentViewController {
             currentPreviewItemIndex = currentViewController.index
+            navigationItem.title = currentPreviewItem?.title
+            if let currentPreviewItem {
+                delegate?.previewController(self, didMoveTo: currentPreviewItem)
+            }
         }
     }
 }

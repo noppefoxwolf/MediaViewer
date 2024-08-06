@@ -5,4 +5,8 @@ final class InteractiveTransition: UIPercentDrivenInteractiveTransition {
         super.init()
         completionCurve = .linear
     }
+    
+    override func update(_ percentComplete: CGFloat) {
+        print(percentComplete)
+    }
 }

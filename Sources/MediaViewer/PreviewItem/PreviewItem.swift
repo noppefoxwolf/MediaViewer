@@ -2,6 +2,9 @@ import UIKit
 
 public protocol PreviewItem {
     @MainActor
+    var title: String? { get }
+    
+    @MainActor
     func makeViewController() async -> UIViewController
     
     @MainActor
@@ -12,6 +15,9 @@ public protocol PreviewItem {
 }
 
 extension PreviewItem {
+    public var title: String? {
+        nil
+    }
     public func makeActivityItemsConfiguration() -> (any UIActivityItemsConfigurationReading)? {
         nil
     }

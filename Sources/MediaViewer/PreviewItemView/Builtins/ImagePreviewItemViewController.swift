@@ -7,6 +7,8 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
     let doubleTapGesture = UITapGestureRecognizer()
     let image: UIImage
     
+    private var viewAppeared = false
+    
     public init(image: UIImage) {
         self.image = image
         super.init(nibName: nil, bundle: nil)
@@ -30,14 +32,19 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
         imageView.isUserInteractionEnabled = true
         scrollView.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            imageView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            imageView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            imageView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            imageView.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
-        ])
+            // Pin the scrollView to the view
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            // Pin the imageView to the scrollView's content edges
+            imageView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            imageView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            imageView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            imageView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor)
+          ])
         
         imageView.image = image
         
@@ -45,9 +52,39 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
         doubleTapGesture.numberOfTapsRequired = 2
         imageView.addGestureRecognizer(doubleTapGesture)
         
-        scrollView.minimumZoomScale = 1.0
-        scrollView.maximumZoomScale = 3.0
-        scrollView.zoomScale = 1.0
+    }
+    
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateZoomScaleForSize(view.bounds.size)
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateZoomScaleForSize(view.bounds.size)
+        viewAppeared = true
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if viewAppeared == true {
+            scrollView.zoomScale = scrollView.minimumZoomScale
+        }
+    }
+    
+    private func updateZoomScaleForSize(_ size: CGSize) {
+        
+        guard viewAppeared == false else {
+            return
+        }
+        
+        let widthScale = size.width / imageView.bounds.width
+        let heightScale = size.height / imageView.bounds.height
+        let minScale = min(widthScale, heightScale)
+        scrollView.minimumZoomScale = minScale
+        
+        scrollView.zoomScale = minScale
+        scrollView.maximumZoomScale = minScale * 4
     }
     
     @objc private func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
@@ -72,5 +109,14 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
     
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         imageView
+    }
+    
+    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
+      /// The amount to inset the scroll content from the top to keep it centered in the view.
+      let inset: CGFloat = (scrollView.bounds.height - imageView.bounds.height * scrollView.zoomScale) / 2
+      /// The amount to subtract from the top inset value to keep the content visually centered.
+      let visualCenteringOffset = scrollView.bounds.height * 0.02
+      // Set the top content inset relative to the current zoom level
+      scrollView.contentInset.top = max(inset , 0)
     }
 }
