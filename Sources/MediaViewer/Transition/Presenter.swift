@@ -26,7 +26,7 @@ final class Presenter: NSObject, UIViewControllerTransitioningDelegate {
     func animationController(
         forDismissed dismissed: UIViewController
     ) -> UIViewControllerAnimatedTransitioning? {
-        reversedDismiss ? ReversedDismissAnimator() : DismissAnimator()
+        DismissAnimator()
     }
     
     func interactionControllerForDismissal(

@@ -111,7 +111,7 @@ open class PreviewController: UIViewController {
             }
             presenter.interactiveTransition?.update(abs(percentComplete))
         case .ended:
-            if abs(translation.y) > 60 {
+            if abs(translation.y) > 120 {
                 presenter.interactiveTransition?.finish()
                 presenter.interactiveTransition = nil
             } else {
@@ -222,6 +222,11 @@ extension PreviewController {
         internalNavigationController
             .topViewController?
             .view
+    }
+    
+    // returns the current view controller viewed by the page vc
+    internal var currentViewController: UIViewController? {
+        pageViewController.viewControllers?.first
     }
 }
 

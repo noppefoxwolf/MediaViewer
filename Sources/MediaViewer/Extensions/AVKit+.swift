@@ -1,6 +1,6 @@
 import AVKit
 
-extension AVAsset {
+public extension AVAsset {
     func makeThumbnailImage() async -> UIImage? {
         do {
             let duration = try await self.load(.duration)

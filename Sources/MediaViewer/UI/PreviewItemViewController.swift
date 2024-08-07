@@ -1,10 +1,25 @@
 import UIKit
 
-final class PreviewItemViewController: UIViewController {
+final class PreviewItemViewController: UIViewController, DismissTransitionViewProviding {
+    
     let previewItem: any PreviewItem
     let index: Int
     var readyToPreviewTask: Task<Void, any Error>? = nil
-        
+    
+    var viewForDismissTransitionStartFrame: UIView? {
+        if let child = children.compactMap { $0 as? DismissTransitionViewProviding }.first {
+            return child.viewForDismissTransition
+        }
+        return nil
+    }
+
+    var viewForDismissTransition: UIView? {
+        if let child = children.compactMap { $0 as? DismissTransitionViewProviding }.first {
+            return child.viewForDismissTransition
+        }
+        return nil
+    }
+    
     init(_ previewItem: any PreviewItem, index: Int) {
         self.previewItem = previewItem
         self.index = index
@@ -30,4 +45,6 @@ final class PreviewItemViewController: UIViewController {
             embed(contentVC)
         }
     }
+    
+    
 }

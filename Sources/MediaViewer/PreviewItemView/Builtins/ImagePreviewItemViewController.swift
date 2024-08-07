@@ -120,3 +120,9 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
       scrollView.contentInset.top = max(inset , 0)
     }
 }
+
+extension ImagePreviewItemViewController: DismissTransitionViewProviding {
+    public var viewForDismissTransition: UIView? {
+        imageView
+    }
+}

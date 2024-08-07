@@ -15,8 +15,8 @@ final class PresentAnimator: Animator {
         )
         
         guard let transitionView = previewController.currentTransitionView,
-              let transitionImageView = container.viewWithTag(602),
-              let background = container.viewWithTag(601),
+              let transitionImageView = container.viewWithTag(PresentationConsts.transitionViewTag),
+              let background = container.viewWithTag(PresentationConsts.backgroundViewTag),
               let topView = previewController.topView else {
             animator.addAnimations {
                 previewController.topView?.alpha = 1
