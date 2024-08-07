@@ -38,6 +38,7 @@ final class Seekbar: UIControl {
         stackView.spacing = UIStackView.spacingUseSystem
         stackView.distribution = .fill
         stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.backgroundColor = UIColor(white: 0, alpha: 0.2)
         addSubview(stackView)
         NSLayoutConstraint.activate([
             playbackButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 44),
