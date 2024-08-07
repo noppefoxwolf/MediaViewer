@@ -3,7 +3,12 @@ import UIKit
 open class WorkaroundNavigationController: UINavigationController {
     
     // workaround: always use hidesBarsOnTap
-    private let tapGesture = UITapGestureRecognizer()
+    private lazy var tapGesture: UITapGestureRecognizer = {
+        let recognizer = UITapGestureRecognizer()
+        recognizer.delegate = self
+        return recognizer
+    }()
+    
     open override var hidesBarsOnTap: Bool {
         get {
             tapGesture.view != nil
@@ -74,5 +79,15 @@ open class WorkaroundNavigationController: UINavigationController {
             self?.toolbar.transform = toTransform
         }
         animator.startAnimation()
+    }
+}
+
+extension WorkaroundNavigationController: UIGestureRecognizerDelegate {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        if let doubleTap = otherGestureRecognizer as? UITapGestureRecognizer,
+           doubleTap.numberOfTapsRequired == 2 {
+            return true
+        }
+        return false
     }
 }

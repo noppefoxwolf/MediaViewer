@@ -9,7 +9,7 @@ extension UIBarButtonItem {
 
 import Combine
 
-fileprivate final class Seekbar: UIControl {
+final class Seekbar: UIControl {
     let player: AVPlayer
     let playbackButton = UIButton(configuration: .playback())
     private let timeLabel = TimeLabel()
@@ -24,19 +24,25 @@ fileprivate final class Seekbar: UIControl {
         self.player = player
         super.init(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
         
+        let spacer = UIView()
+        spacer.translatesAutoresizingMaskIntoConstraints = false
+        spacer.widthAnchor.constraint(equalToConstant: UIStackView.spacingUseSystem).isActive = true
+        
         let stackView = UIStackView(arrangedSubviews: [
             playbackButton,
             slider,
-            timeLabel
+            timeLabel,
+            spacer
         ])
         stackView.axis = .horizontal
         stackView.spacing = UIStackView.spacingUseSystem
-        
+        stackView.distribution = .fill
         stackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stackView)
         NSLayoutConstraint.activate([
             playbackButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 44),
             stackView.topAnchor.constraint(equalTo: topAnchor),
+            stackView.heightAnchor.constraint(equalToConstant: 44.0),
             bottomAnchor.constraint(equalTo: stackView.bottomAnchor),
             stackView.leftAnchor.constraint(equalTo: leftAnchor),
             rightAnchor.constraint(equalTo: stackView.rightAnchor),

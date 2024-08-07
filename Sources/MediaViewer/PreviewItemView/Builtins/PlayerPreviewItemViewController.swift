@@ -36,16 +36,18 @@ public final class PlayerPreviewItemViewController: UIViewController {
         super.viewDidAppear(animated)
         logger.debug("\(#function)")
         player.play()
-        navigationController?.topViewController?.toolbarItems = [
-            UIBarButtonItem.seekbar(player)
-        ]
+        if let pageViewController = navigationController?.topViewController as? PageViewController {
+            pageViewController.showSeekBar(for: player)
+        }
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         logger.debug("\(#function)")
         player.pause()
-        navigationController?.topViewController?.toolbarItems = []
+        if let pageViewController = navigationController?.topViewController as? PageViewController {
+            pageViewController.clearSeekBar()
+        }
     }
 }
 

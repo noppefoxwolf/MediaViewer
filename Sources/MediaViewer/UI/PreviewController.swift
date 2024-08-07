@@ -1,4 +1,5 @@
 import UIKit
+import AVFoundation
 
 open class PreviewController: UIViewController {
     
@@ -38,10 +39,7 @@ open class PreviewController: UIViewController {
             previewItemAt: currentPreviewItemIndex
         )
         if let item {
-            let vc = PreviewItemViewController(
-                item,
-                index: currentPreviewItemIndex
-            )
+            let vc = createPreviewController(for: item, index: currentPreviewItemIndex)
             pageViewController.setViewControllers(
                 [vc],
                 direction: .forward,
@@ -111,7 +109,7 @@ open class PreviewController: UIViewController {
             }
             presenter.interactiveTransition?.update(abs(percentComplete))
         case .ended:
-            if abs(translation.y) > 120 {
+            if abs(translation.y) > 90 {
                 presenter.interactiveTransition?.finish()
                 presenter.interactiveTransition = nil
             } else {
@@ -131,6 +129,11 @@ open class PreviewController: UIViewController {
     @objc private func onLongPress(_ gesture: UILongPressGestureRecognizer) {
         guard gesture.state == .began else { return }
         presentActivityActionTriggered()
+    }
+    
+    private func createPreviewController(for item: PreviewItem, index: Int) -> PreviewItemViewController {
+        let vc = PreviewItemViewController(item, index: index)
+        return vc
     }
 }
 
@@ -158,7 +161,7 @@ extension PreviewController: UIPageViewControllerDataSource {
             previewItemAt: beforeIndex
         )
         guard let item else { return nil }
-        return PreviewItemViewController(item, index: beforeIndex)
+        return createPreviewController(for: item, index: beforeIndex)
     }
     
     public func pageViewController(
@@ -175,7 +178,7 @@ extension PreviewController: UIPageViewControllerDataSource {
             previewItemAt: afterIndex
         )
         guard let item else { return nil }
-        return PreviewItemViewController(item, index: afterIndex)
+        return createPreviewController(for: item, index: afterIndex)
     }
 }
 

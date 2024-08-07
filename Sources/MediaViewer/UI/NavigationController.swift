@@ -5,20 +5,16 @@ final class NavigationController: WorkaroundNavigationController {
         super.viewDidLoad()
         setBarHidden(false, animated: false)
         
-        let appearance = UINavigationBarAppearance()
-        appearance.backgroundColor = .white
-        appearance.shadowColor = .clear
-        appearance.titleTextAttributes = [
+        let navigationBarAppearance = UINavigationBarAppearance()
+        navigationBarAppearance.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 14, weight: .regular),
             .foregroundColor: UIColor.label
         ]
-        navigationBar.standardAppearance = appearance
-        navigationBar.scrollEdgeAppearance = appearance
-        navigationBar.isTranslucent = false
+        navigationBar.standardAppearance = navigationBarAppearance
+        navigationBar.scrollEdgeAppearance = navigationBarAppearance
 
-        toolbar.standardAppearance = UIToolbarAppearance()
-        toolbar.standardAppearance.configureWithTransparentBackground()
-        toolbar.tintColor = .white
+        let toolbarAppearance = UIToolbarAppearance()
+        toolbar.standardAppearance = toolbarAppearance
         
         edgesForExtendedLayout = [.top]
         

@@ -31,7 +31,7 @@ final class DismissAnimator: Animator {
             }
             return animator
         }
-        
+                
         let targetFrame = toTransitionView.convert(toTransitionView.bounds, to: container)
         
         animator.addAnimations {
@@ -42,10 +42,12 @@ final class DismissAnimator: Animator {
         
         animator.addAnimations({
             fromTransitionView.alpha = 0.0
-        }, delayFactor: 0.5)
+            toTransitionView.alpha = 1.0
+        }, delayFactor: 0.7)
         
         animator.addCompletion { _ in
             fromTransitionView.removeFromSuperview()
+            toTransitionView.alpha = 1.0
             let didComplete = !transitionContext.transitionWasCancelled
             if !didComplete {
                 background.alpha = 1.0
