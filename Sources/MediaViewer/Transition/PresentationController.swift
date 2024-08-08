@@ -43,8 +43,7 @@ final class PresentationController: UIPresentationController {
     
         containerView.addSubview(transitionImageView)
         transitionImageView.frame = transitionView.convert(transitionView.bounds, to: containerView)
-        
-        previewController.currentTransitionView?.alpha = 0
+        transitionView.alpha = 0.0
         
         containerView.sendSubviewToBack(transitionView)
         containerView.sendSubviewToBack(backgroundView)
@@ -73,10 +72,10 @@ final class PresentationController: UIPresentationController {
         let transitionImageView = UIImageView(image: transitionImage)
         transitionImageView.tag = PresentationConsts.transitionViewTag
         transitionImageView.contentMode = .scaleAspectFill
-    
+        
         containerView.addSubview(transitionImageView)
         transitionImageView.frame = dismissedView.convert(dismissedView.bounds, to: containerView)
-        
+        previewController.currentTransitionView?.isHidden = true
         previewController.topView?.alpha = 0.0
         
     }

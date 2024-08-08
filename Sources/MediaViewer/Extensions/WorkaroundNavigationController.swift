@@ -22,6 +22,11 @@ open class WorkaroundNavigationController: UINavigationController {
     }
     
     @objc private func onTap(_ gesture: UITapGestureRecognizer) {
+        // don't do anything if the tap was on the nav bar or tool bar
+        let location = gesture.location(in: view)
+        if navigationBar.frame.contains(location) || toolbar.frame.contains(location) {
+            return
+        }
         setToolbarHidden(!isToolbarHidden, animated: true)
         setNavigationBarHidden(!isNavigationBarHidden, animated: true)
     }

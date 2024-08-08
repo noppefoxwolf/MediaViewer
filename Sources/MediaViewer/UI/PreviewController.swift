@@ -76,10 +76,6 @@ open class PreviewController: UIViewController {
         panGesture.delegate = self
         panGesture.addTarget(self, action: #selector(onPan))
         view.addGestureRecognizer(panGesture)
-        
-        let longPressGesture = UILongPressGestureRecognizer()
-        longPressGesture.addTarget(self, action: #selector(onLongPress))
-        view.addGestureRecognizer(longPressGesture)
     }
     
     @objc private func onPan(_ gesture: UIPanGestureRecognizer) {
@@ -124,11 +120,6 @@ open class PreviewController: UIViewController {
         default:
             break
         }
-    }
-    
-    @objc private func onLongPress(_ gesture: UILongPressGestureRecognizer) {
-        guard gesture.state == .began else { return }
-        presentActivityActionTriggered()
     }
     
     private func createPreviewController(for item: PreviewItem, index: Int) -> PreviewItemViewController {
@@ -202,15 +193,16 @@ extension PreviewController: PageViewControllerUIDelegate {
         dismiss(animated: true)
     }
     
-    func presentActivityActionTriggered() {
-        let item = dataSource?.previewController(self, previewItemAt: currentPreviewItemIndex)
-        let configuration = item?.makeActivityItemsConfiguration()
-        guard let configuration else { return }
-        let vc = UIActivityViewController(
-            activityItemsConfiguration: configuration
-        )
-        vc.popoverPresentationController?.sourceItem = pageViewController.navigationItem.rightBarButtonItem
-        present(vc, animated: true)
+    @MainActor
+    func presentActivityActionTriggered() async {
+        guard let item = dataSource?.previewController(self, previewItemAt: currentPreviewItemIndex),
+              let items = await dataSource?.activityItems(for: item) else {
+            return
+        }
+        
+        let activityController = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        activityController.popoverPresentationController?.sourceItem = pageViewController.toolbarItems?.first
+        present(activityController, animated: true)
     }
 }
 

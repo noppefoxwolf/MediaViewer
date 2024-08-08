@@ -17,6 +17,9 @@ final class DismissAnimator: Animator {
               let toTransitionView = previewController.currentTransitionView,
               let background = container.viewWithTag(PresentationConsts.backgroundViewTag),
               let topView = previewController.topView else {
+            
+            previewController.currentTransitionView?.isHidden = false
+            
             animator.addAnimations {
                 transitionContext.containerView.backgroundColor = .clear
                 previewController.topView?.alpha = 0.0
@@ -40,14 +43,9 @@ final class DismissAnimator: Animator {
             fromTransitionView.frame = targetFrame
         }
         
-        animator.addAnimations({
-            fromTransitionView.alpha = 0.0
-            toTransitionView.alpha = 1.0
-        }, delayFactor: 0.7)
-        
         animator.addCompletion { _ in
+            toTransitionView.isHidden = false
             fromTransitionView.removeFromSuperview()
-            toTransitionView.alpha = 1.0
             let didComplete = !transitionContext.transitionWasCancelled
             if !didComplete {
                 background.alpha = 1.0

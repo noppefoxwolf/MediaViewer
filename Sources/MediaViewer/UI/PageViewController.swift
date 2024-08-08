@@ -3,7 +3,7 @@ import AVFoundation
 
 protocol PageViewControllerUIDelegate: AnyObject {
     func dismissActionTriggered()
-    func presentActivityActionTriggered()
+    func presentActivityActionTriggered() async
 }
 
 final class PageViewController: UIPageViewController {
@@ -27,6 +27,11 @@ final class PageViewController: UIPageViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .done, primaryAction: UIAction { [weak self] _ in
             self?.uiDelegate?.dismissActionTriggered()
         })
+        toolbarItems = [UIBarButtonItem(systemItem: .action, primaryAction: UIAction { [weak self] _ in
+            Task {
+                await self?.uiDelegate?.presentActivityActionTriggered()
+            }
+        }), UIBarButtonItem.flexibleSpace()]
         view.addSubview(itemBottomStack)
         setupConstraints()
     }
