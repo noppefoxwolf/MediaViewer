@@ -8,6 +8,7 @@ fileprivate let logger = Logger(
     category: #file
 )
 
+@MainActor
 public final class PlayerPreviewItemViewController: AVPlayerViewController {
     private var playerOutput: AVPlayerItemVideoOutput
     
@@ -43,6 +44,7 @@ public final class PlayerPreviewItemViewController: AVPlayerViewController {
     }
 }
 
+@MainActor
 extension PlayerPreviewItemViewController: DismissTransitionViewProviding {
     public var viewForDismissTransition: UIView? {
         guard let player else { return nil }

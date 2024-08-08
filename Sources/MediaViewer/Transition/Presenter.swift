@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 final class Presenter: NSObject, UIViewControllerTransitioningDelegate {
     var interactiveTransition: InteractiveTransition? = nil
     var reversedDismiss: Bool = false

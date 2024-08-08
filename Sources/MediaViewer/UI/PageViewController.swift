@@ -1,11 +1,13 @@
 import UIKit
 import AVFoundation
 
+@MainActor
 protocol PageViewControllerUIDelegate: AnyObject {
     func dismissActionTriggered()
     func presentActivityActionTriggered() async
 }
 
+@MainActor
 final class PageViewController: UIPageViewController {
     
     weak var uiDelegate: PageViewControllerUIDelegate? = nil
@@ -43,6 +45,7 @@ final class PageViewController: UIPageViewController {
     }
 }
 
+@MainActor
 private extension UIStackView {
     @discardableResult
     func removeAllArrangedSubviews() -> [UIView] {

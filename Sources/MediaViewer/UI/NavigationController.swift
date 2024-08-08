@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 final class NavigationController: WorkaroundNavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()

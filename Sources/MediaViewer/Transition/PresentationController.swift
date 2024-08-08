@@ -5,6 +5,7 @@ struct PresentationConsts {
     static let backgroundViewTag = 601
 }
 
+@MainActor
 final class PresentationController: UIPresentationController {
     
     override func presentationTransitionWillBegin() {

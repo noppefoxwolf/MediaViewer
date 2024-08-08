@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 public final class ThumbnailViewController: UIViewController {
     let thumbnailImageView = UIImageView()
     

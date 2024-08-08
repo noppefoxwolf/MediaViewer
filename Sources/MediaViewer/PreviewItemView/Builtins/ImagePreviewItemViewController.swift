@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 public final class ImagePreviewItemViewController: UIViewController, UIScrollViewDelegate {
 
     let scrollView = UIScrollView()

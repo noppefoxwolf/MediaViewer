@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 final class PreviewItemViewController: UIViewController, DismissTransitionViewProviding {
     
     let previewItem: any PreviewItem

@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 open class Animator: NSObject, UIViewControllerAnimatedTransitioning {
     open func transitionDuration(
         using transitionContext: UIViewControllerContextTransitioning?

@@ -1,6 +1,7 @@
 import UIKit
 import AVFoundation
 
+@MainActor
 open class PreviewController: UIViewController {
     
     private let presenter = Presenter()
@@ -128,6 +129,7 @@ open class PreviewController: UIViewController {
     }
 }
 
+@MainActor
 extension PreviewController: UIGestureRecognizerDelegate {
     public func gestureRecognizerShouldBegin(
         _ gestureRecognizer: UIGestureRecognizer
@@ -139,6 +141,7 @@ extension PreviewController: UIGestureRecognizerDelegate {
     }
 }
 
+@MainActor
 extension PreviewController: UIPageViewControllerDataSource {
     public func pageViewController(
         _ pageViewController: UIPageViewController,
@@ -173,6 +176,7 @@ extension PreviewController: UIPageViewControllerDataSource {
     }
 }
 
+@MainActor
 extension PreviewController: UIPageViewControllerDelegate {
     public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         let currentViewController = pageViewController.viewControllers?.first as? PreviewItemViewController
@@ -186,6 +190,7 @@ extension PreviewController: UIPageViewControllerDelegate {
     }
 }
 
+@MainActor
 extension PreviewController: PageViewControllerUIDelegate {
     func dismissActionTriggered() {
         internalNavigationController.setNavigationBarHidden(true, animated: true)
@@ -207,6 +212,7 @@ extension PreviewController: PageViewControllerUIDelegate {
 }
 
 // MARK: utils
+@MainActor
 extension PreviewController {
     internal var currentTransitionView: UIView? {
         guard let currentPreviewItem else { return nil }

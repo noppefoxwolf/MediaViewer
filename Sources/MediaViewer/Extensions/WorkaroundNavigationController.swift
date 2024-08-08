@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 open class WorkaroundNavigationController: UINavigationController {
     
     // workaround: always use hidesBarsOnTap

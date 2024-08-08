@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 final class DismissAnimator: Animator {
     override func interruptibleAnimator(
         using transitionContext: UIViewControllerContextTransitioning

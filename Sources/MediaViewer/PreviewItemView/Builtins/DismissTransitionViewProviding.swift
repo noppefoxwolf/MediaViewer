@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+@MainActor
 public protocol DismissTransitionViewProviding {
     var viewForDismissTransition: UIView? { get }
 }
