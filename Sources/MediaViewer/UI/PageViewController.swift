@@ -9,9 +9,7 @@ protocol PageViewControllerUIDelegate: AnyObject {
 final class PageViewController: UIPageViewController {
     
     weak var uiDelegate: PageViewControllerUIDelegate? = nil
-    
-    private weak var seekBar: Seekbar?
-    
+        
     private lazy var itemBottomStack: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -34,20 +32,6 @@ final class PageViewController: UIPageViewController {
         }), UIBarButtonItem.flexibleSpace()]
         view.addSubview(itemBottomStack)
         setupConstraints()
-    }
-    
-    public func showSeekBar(for player: AVPlayer) {
-        clearSeekBar()
-        let bar = Seekbar(player)
-        seekBar = bar
-        itemBottomStack.addArrangedSubview(bar)
-    }
-    
-    public func clearSeekBar() {
-        if let seekBar {
-            itemBottomStack.removeArrangedSubViewProperly(seekBar)
-        }
-        seekBar = nil
     }
     
     private func setupConstraints() {
