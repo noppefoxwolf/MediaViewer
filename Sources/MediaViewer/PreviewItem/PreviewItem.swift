@@ -1,16 +1,13 @@
 import UIKit
 
+@MainActor
 public protocol PreviewItem {
-    @MainActor
     var title: String? { get }
-    
-    @MainActor
     func makeViewController() async -> UIViewController
-    
-    @MainActor
     func makeThumbnailViewController() -> UIViewController?
 }
 
+@MainActor
 extension PreviewItem {
     public var title: String? {
         nil

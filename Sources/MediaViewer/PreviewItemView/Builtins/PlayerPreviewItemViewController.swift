@@ -21,6 +21,7 @@ public final class PlayerPreviewItemViewController: AVPlayerViewController {
     
     required init?(coder: NSCoder) { fatalError() }
     
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         player?.currentItem?.add(playerOutput)
@@ -30,6 +31,9 @@ public final class PlayerPreviewItemViewController: AVPlayerViewController {
         super.viewDidAppear(animated)
         logger.debug("\(#function)")
         player?.play()
+        if let navigationController = navigationController as? NavigationController {
+            navigationController.setBarHidden(false, animated: true)
+        }
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
