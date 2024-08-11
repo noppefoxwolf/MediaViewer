@@ -18,15 +18,7 @@ final class PresentationController: UIPresentationController {
         containerView.backgroundColor = .clear
         containerView.addSubview(presentedView!)
 
-        previewController.internalNavigationController.navigationBar.alpha = 0.0
         previewController.topView?.alpha = 0.0
-        
-        let backgroundView = UIView()
-        backgroundView.tag = PresentationConsts.backgroundViewTag
-        backgroundView.backgroundColor = .black
-        backgroundView.alpha = 0.0
-        containerView.addSubview(backgroundView)
-        backgroundView.frame = containerView.bounds
         
         let transitionImage: UIImage?
         if let cgImage = (transitionView as? UIImageView)?.image?.cgImage {
@@ -40,14 +32,18 @@ final class PresentationController: UIPresentationController {
         
         let transitionImageView = UIImageView(image: transitionImage)
         transitionImageView.tag = PresentationConsts.transitionViewTag
-        transitionImageView.contentMode = .scaleAspectFit
-    
-        containerView.addSubview(transitionImageView)
-        transitionImageView.frame = transitionView.convert(transitionView.bounds, to: containerView)
+        transitionImageView.contentMode = .scaleAspectFill
+        
+        transitionImageView.clipsToBounds = true
         transitionView.alpha = 0.0
         
-        containerView.sendSubviewToBack(transitionView)
-        containerView.sendSubviewToBack(backgroundView)
+        let navController = previewController.internalNavigationController
+        navController.view.addSubview(transitionImageView)
+        navController.view.bringSubviewToFront(navController.navigationBar)
+        navController.view.bringSubviewToFront(navController.toolbar)
+        transitionImageView.frame = transitionView.convert(transitionView.bounds,
+                                                           to: navController.view)
+        
         containerView.bringSubviewToFront(presentedView!)
         
     }
@@ -59,7 +55,6 @@ final class PresentationController: UIPresentationController {
               let dismissedView = dismissedController.viewForDismissTransition,
               let containerView else { return }
                 
-
         let transitionImage: UIImage?
         if let cgImage = (dismissedView as? UIImageView)?.image?.cgImage {
             transitionImage = UIImage(cgImage: cgImage)
@@ -75,8 +70,17 @@ final class PresentationController: UIPresentationController {
         transitionImageView.contentMode = .scaleAspectFill
         
         containerView.addSubview(transitionImageView)
+        containerView.bringSubviewToFront(previewController.view)
         transitionImageView.frame = dismissedView.convert(dismissedView.bounds, to: containerView)
-        previewController.currentTransitionView?.isHidden = true
+        transitionImageView.clipsToBounds = true
+       
+        if let transitionView = previewController.currentTransitionView {
+            transitionView.alpha = 0.0
+            transitionView.setNeedsDisplay()
+            transitionView.layoutIfNeeded()
+            CATransaction.flush()
+        }
+        
         previewController.topView?.alpha = 0.0
         
     }

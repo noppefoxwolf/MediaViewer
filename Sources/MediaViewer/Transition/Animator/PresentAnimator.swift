@@ -1,4 +1,5 @@
 import UIKit
+import AVFoundation
 
 @MainActor
 final class PresentAnimator: Animator {
@@ -7,6 +8,7 @@ final class PresentAnimator: Animator {
     ) -> UIViewImplicitlyAnimating {
         
         let previewController = transitionContext.viewController(forKey: .to) as! PreviewController
+        let fromController = transitionContext.viewController(forKey: .from)
         let container = transitionContext.containerView
         
         let duration = transitionDuration(using: transitionContext)
@@ -16,8 +18,9 @@ final class PresentAnimator: Animator {
         )
         
         guard let transitionView = previewController.currentTransitionView,
-              let transitionImageView = container.viewWithTag(PresentationConsts.transitionViewTag),
-              let background = container.viewWithTag(PresentationConsts.backgroundViewTag),
+              let transitionImageView = container.viewWithTag(PresentationConsts.transitionViewTag) as? UIImageView,
+              let transitionImage = transitionImageView.image,
+              let fromView = fromController?.view,
               let topView = previewController.topView else {
             animator.addAnimations {
                 previewController.topView?.alpha = 1
@@ -31,10 +34,11 @@ final class PresentAnimator: Animator {
             return animator
         }
         
+        let targetRect = AVMakeRect(aspectRatio: transitionImage.size, insideRect: container.bounds)
+        
         animator.addAnimations {
-            background.alpha = 1.0
-            previewController.internalNavigationController.navigationBar.alpha = 1.0
-            transitionImageView.frame = container.bounds
+            fromView.alpha = 0.0
+            transitionImageView.frame = targetRect
         }
         
         animator.addCompletion { _ in

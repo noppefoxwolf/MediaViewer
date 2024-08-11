@@ -61,7 +61,6 @@ open class PreviewController: UIViewController {
     
     open override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .clear
         embed(internalNavigationController)
         edgesForExtendedLayout = [.top, .bottom]
         extendedLayoutIncludesOpaqueBars = true
@@ -85,7 +84,7 @@ open class PreviewController: UIViewController {
         case .began:
             presenter.interactiveTransition = InteractiveTransition()
             wasToolbarHidden = internalNavigationController.isToolbarHidden
-            internalNavigationController.setBarHidden(true, animated: true)
+            internalNavigationController.setBarHidden(false, animated: false)
             dismiss(animated: true)
         case .changed:
             let percentComplete = translation.y / gesture.view!.bounds.height
@@ -193,8 +192,8 @@ extension PreviewController: UIPageViewControllerDelegate {
 @MainActor
 extension PreviewController: PageViewControllerUIDelegate {
     func dismissActionTriggered() {
-        internalNavigationController.setNavigationBarHidden(true, animated: true)
-        internalNavigationController.setToolbarHidden(true, animated: true)
+        internalNavigationController.setNavigationBarHidden(false, animated: false)
+        internalNavigationController.setToolbarHidden(false, animated: false)
         dismiss(animated: true)
     }
     
