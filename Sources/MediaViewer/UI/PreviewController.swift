@@ -4,7 +4,11 @@ import AVFoundation
 @MainActor
 open class PreviewController: UIViewController {
     
-    private let presenter = Presenter()
+    private(set) lazy var presenter: Presenter = {
+        Presenter { [weak self] in
+            self?.delegate?.previewControllerDidDismiss()
+        }
+    }()
     
     public weak var dataSource: PreviewControllerDataSource? = nil
     public weak var delegate: PreviewControllerDelegate? = nil

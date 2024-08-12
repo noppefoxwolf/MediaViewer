@@ -2,6 +2,9 @@ import UIKit
 
 @MainActor
 final class DismissAnimator: Animator {
+    
+    var onDismissed: (() -> Void)?
+    
     override func interruptibleAnimator(
         using transitionContext: UIViewControllerContextTransitioning
     ) -> UIViewImplicitlyAnimating {
@@ -64,11 +67,16 @@ final class DismissAnimator: Animator {
         animator.addCompletion { _ in
             fromTransitionView.removeFromSuperview()
             let didComplete = !transitionContext.transitionWasCancelled
-            if !didComplete {
+            transitionContext.completeTransition(didComplete)
+            if didComplete {
+                // it's ok to hold a strong reference here as the completion block is guarenteed to be called
+                // and this reference is actually what's holding it until this point.
+                self.onDismissed?()
+            } else {
+                toTransitionView.alpha = 1.0
                 previewController.internalNavigationController.navigationBar.alpha = 1.0
                 previewController.topView?.alpha = 1.0
             }
-            transitionContext.completeTransition(didComplete)
         }
         
         return animator
