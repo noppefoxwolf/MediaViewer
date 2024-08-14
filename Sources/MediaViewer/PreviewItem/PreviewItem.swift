@@ -3,7 +3,9 @@ import UIKit
 @MainActor
 public protocol PreviewItem {
     var title: String? { get }
-    func makeViewController() async -> UIViewController
+    var onLoadError: ((Error) -> Void)? { get }
+    func makeViewController() async throws -> UIViewController
+    func makeErrorViewController() -> UIViewController
     func makeThumbnailViewController() -> UIViewController?
 }
 

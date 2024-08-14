@@ -41,9 +41,16 @@ final class PreviewItemViewController: UIViewController, DismissTransitionViewPr
         }
         
         readyToPreviewTask = Task {
-            let contentVC = await previewItem.makeViewController()
-            thumbnailVC?.digup()
-            embed(contentVC)
+            do {
+                let contentVC = try await previewItem.makeViewController()
+                thumbnailVC?.digup()
+                embed(contentVC)
+            } catch {
+                let errorVC = previewItem.makeErrorViewController()
+                thumbnailVC?.digup()
+                embed(errorVC)
+                previewItem.onLoadError?(error)
+            }
         }
     }
     

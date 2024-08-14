@@ -28,13 +28,13 @@ final class DismissAnimator: Animator {
             animator.addAnimations {
                 transitionContext.containerView.backgroundColor = .clear
                 previewController.topView?.alpha = 0.0
+                transitionContext.viewController(forKey: .to)?.view.alpha = 1.0
             }
             
             animator.addCompletion { _ in
                 let didComplete = !transitionContext.transitionWasCancelled
-                if !didComplete {
-                    previewController.internalNavigationController.navigationBar.alpha = 1.0
-                    previewController.topView?.alpha = 1.0
+                if didComplete {
+                    self.onDismissed?()
                 }
                 transitionContext.completeTransition(didComplete)
             }
