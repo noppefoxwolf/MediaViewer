@@ -5,7 +5,10 @@ import AVFoundation
 open class PreviewController: UIViewController {
     
     private(set) lazy var presenter: Presenter = {
-        Presenter { [weak self] in
+        Presenter(onWillDismiss: { [weak self] in
+            guard let self, let currentPreviewItem else { return }
+            delegate?.previewController(self, willDismissWith: currentPreviewItem)
+        }) { [weak self] in
             self?.delegate?.previewControllerDidDismiss()
         }
     }()

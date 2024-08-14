@@ -8,6 +8,8 @@ struct PresentationConsts {
 @MainActor
 final class PresentationController: UIPresentationController {
     
+    var onWillDismiss:(() -> Void)?
+    
     override func presentationTransitionWillBegin() {
         
         guard let previewController = presentedViewController as? PreviewController,
@@ -83,6 +85,7 @@ final class PresentationController: UIPresentationController {
         
         previewController.topView?.alpha = 0.0
         
+        onWillDismiss?()
     }
     
     override func dismissalTransitionDidEnd(_ completed: Bool) {

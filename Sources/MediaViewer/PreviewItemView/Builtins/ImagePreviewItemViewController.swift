@@ -52,7 +52,7 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
         doubleTapGesture.addTarget(self, action: #selector(handleDoubleTapGesture))
         doubleTapGesture.numberOfTapsRequired = 2
         imageView.addGestureRecognizer(doubleTapGesture)
-        
+        updateZoomScaleForSize(view.bounds.size)
     }
     
     public override func viewDidLayoutSubviews() {
