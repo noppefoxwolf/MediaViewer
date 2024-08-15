@@ -22,9 +22,11 @@ final class PresentAnimator: Animator {
               let transitionImage = transitionImageView.image,
               let fromView = fromController?.view,
               let topView = previewController.topView else {
+            
+            (container.viewWithTag(PresentationConsts.transitionViewTag) as? UIImageView)?.removeFromSuperview()
+            
             animator.addAnimations {
                 previewController.topView?.alpha = 1
-                previewController.internalNavigationController.navigationBar.alpha = 1.0
             }
             animator.addCompletion { _ in
                 previewController.currentTransitionView?.alpha = 1
@@ -37,7 +39,6 @@ final class PresentAnimator: Animator {
         let targetRect = AVMakeRect(aspectRatio: transitionImage.size, insideRect: container.bounds)
         
         animator.addAnimations {
-            fromView.alpha = 0.0
             transitionImageView.frame = targetRect
         }
         

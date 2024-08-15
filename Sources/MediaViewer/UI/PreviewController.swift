@@ -66,6 +66,29 @@ open class PreviewController: UIViewController {
     
     public required init?(coder: NSCoder) { fatalError() }
     
+    open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return [.portrait, .landscapeLeft, .landscapeRight]
+    }
+    
+    open override var shouldAutorotate: Bool {
+        return true
+    }
+    
+    open override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        setOrientation(to: .portrait)
+    }
+    
+    func setOrientation(to orientation: UIInterfaceOrientation) {
+        guard let windowScene = view.window?.windowScene else { return }
+        
+        let geometryPreferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: orientation.mask)
+        
+        windowScene.requestGeometryUpdate(geometryPreferences) { error in
+            print("Failed to update geometry: \(error.localizedDescription)")
+        }
+    }
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
         embed(internalNavigationController)
@@ -240,4 +263,27 @@ extension PreviewController {
 fileprivate final class Toolbar: UIToolbar {
     // TODO: self-resizing height
     // TODO: transparency background when has any item
+}
+
+extension UIInterfaceOrientation {
+    var mask: UIInterfaceOrientationMask {
+        switch self {
+        case .portrait:
+            return .portrait
+        case .landscapeLeft:
+            return .landscapeLeft
+        case .landscapeRight:
+            return .landscapeRight
+        case .portraitUpsideDown:
+            return .portraitUpsideDown
+        default:
+            return .all
+        }
+    }
+}
+
+internal extension UIViewController {
+    var isDarkMode: Bool {
+        traitCollection.userInterfaceStyle == .dark
+    }
 }
