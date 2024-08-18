@@ -4,14 +4,19 @@ import UIKit
 public final class ImagePreviewItemViewController: UIViewController, UIScrollViewDelegate {
 
     let scrollView = UIScrollView()
-    let imageView = UIImageView()
+    let imageView: UIImageView
     let doubleTapGesture = UITapGestureRecognizer()
-    let image: UIImage
+    private var image: UIImage?
     
     private var viewAppeared = false
     
     public init(image: UIImage) {
-        self.image = image
+        imageView = UIImageView(image: image)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    public init(imageView: UIImageView) {
+        self.imageView = imageView
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -43,8 +48,6 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
             imageView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
             imageView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor)
           ])
-        
-        imageView.image = image
         
         doubleTapGesture.addTarget(self, action: #selector(handleDoubleTapGesture))
         doubleTapGesture.numberOfTapsRequired = 2
