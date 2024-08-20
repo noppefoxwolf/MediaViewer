@@ -30,8 +30,8 @@ open class WorkaroundNavigationController: UINavigationController {
         }
         setToolbarHidden(!isToolbarHidden, animated: true)
         setNavigationBarHidden(!isNavigationBarHidden, animated: true)
-        let hidden = isNavigationBarHidden
         if isDarkMode == false { // only toggle background color on light mode
+            let hidden = isNavigationBarHidden
             UIView.animate(withDuration: 0.2) {
                 self.view.backgroundColor = hidden ? .black : .white
             }

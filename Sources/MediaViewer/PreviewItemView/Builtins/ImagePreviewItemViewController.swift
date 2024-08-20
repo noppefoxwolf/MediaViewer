@@ -6,7 +6,6 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
     let scrollView = UIScrollView()
     let imageView: UIImageView
     let doubleTapGesture = UITapGestureRecognizer()
-    private var image: UIImage?
     
     private var viewAppeared = false
     

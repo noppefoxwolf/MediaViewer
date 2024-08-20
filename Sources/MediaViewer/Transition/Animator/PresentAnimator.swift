@@ -23,7 +23,7 @@ final class PresentAnimator: Animator {
               let fromView = fromController?.view,
               let topView = previewController.topView else {
             
-            (container.viewWithTag(PresentationConsts.transitionViewTag) as? UIImageView)?.removeFromSuperview()
+            container.viewWithTag(PresentationConsts.transitionViewTag)?.removeFromSuperview()
             
             animator.addAnimations {
                 previewController.topView?.alpha = 1

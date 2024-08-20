@@ -74,7 +74,7 @@ open class PreviewController: UIViewController {
         setOrientation(to: .portrait)
     }
     
-    func setOrientation(to orientation: UIInterfaceOrientation) {
+    private func setOrientation(to orientation: UIInterfaceOrientation) {
         guard let windowScene = view.window?.windowScene else { return }
         
         let geometryPreferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: orientation.mask)
