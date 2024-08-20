@@ -62,6 +62,7 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateZoomScaleForSize(view.bounds.size)
+        updateScrollInsets()
         viewAppeared = true
     }
     
@@ -76,8 +77,10 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
         super.viewWillTransition(to: size, with: coordinator)
         coordinator.animate(alongsideTransition: { context in
             self.updateZoomScaleForSize(size, force: true)
+            self.updateScrollInsets()
             }, completion: { context in
                 self.updateZoomScaleForSize(size, force: true)
+                self.updateScrollInsets()
             })
         
     }
@@ -92,9 +95,9 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
         let heightScale = size.height / imageView.bounds.height
         let minScale = min(widthScale, heightScale)
         scrollView.minimumZoomScale = minScale
-        
-        scrollView.zoomScale = minScale
         scrollView.maximumZoomScale = minScale * 4
+        scrollView.zoomScale = minScale
+        
     }
     
     @objc private func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
@@ -122,6 +125,10 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
     }
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        updateScrollInsets()
+    }
+    
+    private func updateScrollInsets() {
         let verticalInset = max((scrollView.bounds.height - imageView.bounds.height * scrollView.zoomScale) / 2, 0)
         let horizontalInset = max((scrollView.bounds.width - imageView.bounds.width * scrollView.zoomScale) / 2, 0)
         scrollView.contentInset = UIEdgeInsets(top: verticalInset, left: horizontalInset, bottom: verticalInset, right: horizontalInset)
