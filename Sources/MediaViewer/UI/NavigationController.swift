@@ -4,6 +4,7 @@ import UIKit
 final class NavigationController: WorkaroundNavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = isDarkMode ? .black : .white
         setBarHidden(false, animated: false)
         
         let navigationBarAppearance = UINavigationBarAppearance()

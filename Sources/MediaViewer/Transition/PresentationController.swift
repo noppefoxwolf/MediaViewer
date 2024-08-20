@@ -73,19 +73,18 @@ final class PresentationController: UIPresentationController {
         transitionImageView.contentMode = .scaleAspectFill
         
         containerView.addSubview(transitionImageView)
-        containerView.bringSubviewToFront(previewController.view)
         transitionImageView.frame = dismissedView.convert(dismissedView.bounds, to: containerView)
         transitionImageView.clipsToBounds = true
        
+        previewController.topView?.alpha = 0.0
+        
         if let transitionView = previewController.currentTransitionView {
             transitionView.alpha = 0.0
             transitionView.setNeedsDisplay()
             transitionView.layoutIfNeeded()
             CATransaction.flush()
         }
-        
-        previewController.topView?.alpha = 0.0
-        
+                
         onWillDismiss?()
     }
     

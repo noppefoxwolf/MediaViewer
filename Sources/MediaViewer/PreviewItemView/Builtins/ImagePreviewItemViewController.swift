@@ -4,14 +4,18 @@ import UIKit
 public final class ImagePreviewItemViewController: UIViewController, UIScrollViewDelegate {
 
     let scrollView = UIScrollView()
-    let imageView = UIImageView()
+    let imageView: UIImageView
     let doubleTapGesture = UITapGestureRecognizer()
-    let image: UIImage
     
     private var viewAppeared = false
     
     public init(image: UIImage) {
-        self.image = image
+        imageView = UIImageView(image: image)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    public init(imageView: UIImageView) {
+        self.imageView = imageView
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -27,7 +31,6 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.contentInsetAdjustmentBehavior = .never
-        
         imageView.backgroundColor = .clear
         imageView.contentMode = .scaleAspectFit
         imageView.isUserInteractionEnabled = true
@@ -35,19 +38,15 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            // Pin the scrollView to the view
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            // Pin the imageView to the scrollView's content edges
             imageView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
             imageView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
             imageView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
             imageView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor)
           ])
-        
-        imageView.image = image
         
         doubleTapGesture.addTarget(self, action: #selector(handleDoubleTapGesture))
         doubleTapGesture.numberOfTapsRequired = 2
@@ -63,6 +62,7 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateZoomScaleForSize(view.bounds.size)
+        updateScrollInsets()
         viewAppeared = true
     }
     
@@ -73,9 +73,21 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
         }
     }
     
-    private func updateZoomScaleForSize(_ size: CGSize) {
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: { context in
+            self.updateZoomScaleForSize(size, force: true)
+            self.updateScrollInsets()
+            }, completion: { context in
+                self.updateZoomScaleForSize(size, force: true)
+                self.updateScrollInsets()
+            })
         
-        guard viewAppeared == false else {
+    }
+    
+    private func updateZoomScaleForSize(_ size: CGSize, force: Bool = false) {
+        
+        guard viewAppeared == false || force else {
             return
         }
         
@@ -83,9 +95,9 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
         let heightScale = size.height / imageView.bounds.height
         let minScale = min(widthScale, heightScale)
         scrollView.minimumZoomScale = minScale
-        
-        scrollView.zoomScale = minScale
         scrollView.maximumZoomScale = minScale * 4
+        scrollView.zoomScale = minScale
+        
     }
     
     @objc private func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
@@ -113,13 +125,15 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
     }
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
-      /// The amount to inset the scroll content from the top to keep it centered in the view.
-      let inset: CGFloat = (scrollView.bounds.height - imageView.bounds.height * scrollView.zoomScale) / 2
-      /// The amount to subtract from the top inset value to keep the content visually centered.
-      let visualCenteringOffset = scrollView.bounds.height * 0.02
-      // Set the top content inset relative to the current zoom level
-      scrollView.contentInset.top = max(inset , 0)
+        updateScrollInsets()
     }
+    
+    private func updateScrollInsets() {
+        let verticalInset = max((scrollView.bounds.height - imageView.bounds.height * scrollView.zoomScale) / 2, 0)
+        let horizontalInset = max((scrollView.bounds.width - imageView.bounds.width * scrollView.zoomScale) / 2, 0)
+        scrollView.contentInset = UIEdgeInsets(top: verticalInset, left: horizontalInset, bottom: verticalInset, right: horizontalInset)
+    }
+
 }
 
 extension ImagePreviewItemViewController: DismissTransitionViewProviding {
