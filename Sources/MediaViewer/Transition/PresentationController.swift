@@ -14,11 +14,12 @@ final class PresentationController: UIPresentationController {
         
         guard let previewController = presentedViewController as? PreviewController,
               let containerView,
+              let presentedView,
               let transitionView = previewController.currentTransitionView,
               let topView = previewController.topView else { return }
         
         containerView.backgroundColor = .clear
-        containerView.addSubview(presentedView!)
+        containerView.addSubview(presentedView)
 
         previewController.topView?.alpha = 0.0
         
@@ -46,7 +47,7 @@ final class PresentationController: UIPresentationController {
         transitionImageView.frame = transitionView.convert(transitionView.bounds,
                                                            to: navController.view)
         
-        containerView.bringSubviewToFront(presentedView!)
+        containerView.bringSubviewToFront(presentedView)
         
     }
     

@@ -4,8 +4,8 @@ import UIKit
 final class Presenter: NSObject, UIViewControllerTransitioningDelegate {
     var interactiveTransition: InteractiveTransition? = nil
     var reversedDismiss: Bool = false
-    var onDismissed: (() -> Void)?
-    var onWillDismiss:(() -> Void)?
+    private let onDismissed: (() -> Void)?
+    private let onWillDismiss:(() -> Void)?
     
     init(onWillDismiss:(() -> Void)? = nil,
          onDismissed: (() -> Void)? = nil) {

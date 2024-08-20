@@ -10,23 +10,14 @@ fileprivate let logger = Logger(
 
 @MainActor
 public final class PlayerPreviewItemViewController: AVPlayerViewController {
-    private var playerOutput: AVPlayerItemVideoOutput
     
     public init(player: AVPlayer) {
-        playerOutput = AVPlayerItemVideoOutput(pixelBufferAttributes:
-                                                [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)])
         super.init(nibName: nil, bundle: nil)
         self.player = player
         allowsPictureInPicturePlayback = false
     }
     
     required init?(coder: NSCoder) { fatalError() }
-    
-    
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        player?.currentItem?.add(playerOutput)
-    }
     
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -47,20 +38,19 @@ public final class PlayerPreviewItemViewController: AVPlayerViewController {
 @MainActor
 extension PlayerPreviewItemViewController: DismissTransitionViewProviding {
     public var viewForDismissTransition: UIView? {
-        guard let player else { return nil }
-        if let asset = player.currentItem?.asset {
-            let imageGenerator = AVAssetImageGenerator(asset: asset)
-            imageGenerator.requestedTimeToleranceAfter = CMTime.zero
-            imageGenerator.requestedTimeToleranceBefore = CMTime.zero
-            imageGenerator.appliesPreferredTrackTransform = true
-            if let thumb: CGImage = try? imageGenerator.copyCGImage(at: player.currentTime(), actualTime: nil) {
-                let image = UIImage(cgImage: thumb)
-                let imageView = UIImageView(image: image)
-                imageView.frame = AVMakeRect(aspectRatio: image.size, insideRect: view.bounds)
-                return imageView
-            }
-            
+        guard let player, let asset = player.currentItem?.asset else {
+            return nil
         }
-        return nil
+        let imageGenerator = AVAssetImageGenerator(asset: asset)
+        imageGenerator.requestedTimeToleranceAfter = CMTime.zero
+        imageGenerator.requestedTimeToleranceBefore = CMTime.zero
+        imageGenerator.appliesPreferredTrackTransform = true
+        guard let thumb: CGImage = try? imageGenerator.copyCGImage(at: player.currentTime(), actualTime: nil) else {
+            return nil
+        }
+        let image = UIImage(cgImage: thumb)
+        let imageView = UIImageView(image: image)
+        imageView.frame = AVMakeRect(aspectRatio: image.size, insideRect: view.bounds)
+        return imageView
     }
 }
