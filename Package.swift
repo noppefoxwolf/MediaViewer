@@ -18,7 +18,8 @@ let package = Package(
     targets: [
         .target(
             name: "MediaViewer",
-            resources: [.copy("Resources/PrivacyInfo.xcprivacy")]
+            resources: [.copy("Resources/PrivacyInfo.xcprivacy")],
+            swiftSettings: [.enableExperimentalFeature("StrictConcurrency")]
         ),
         .testTarget(
             name: "MediaViewerTests",

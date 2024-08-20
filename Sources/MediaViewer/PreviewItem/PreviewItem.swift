@@ -1,18 +1,17 @@
 import UIKit
 
+@MainActor
 public protocol PreviewItem {
-    @MainActor
-    func makeViewController() async -> UIViewController
-    
-    @MainActor
+    var title: String? { get }
+    var onLoadError: ((Error) -> Void)? { get }
+    func makeViewController() async throws -> UIViewController
+    func makeErrorViewController() -> UIViewController
     func makeThumbnailViewController() -> UIViewController?
-    
-    @MainActor
-    func makeActivityItemsConfiguration() -> (any UIActivityItemsConfigurationReading)?
 }
 
+@MainActor
 extension PreviewItem {
-    public func makeActivityItemsConfiguration() -> (any UIActivityItemsConfigurationReading)? {
+    public var title: String? {
         nil
     }
 }

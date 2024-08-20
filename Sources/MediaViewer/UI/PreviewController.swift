@@ -1,8 +1,17 @@
 import UIKit
+import AVFoundation
 
+@MainActor
 open class PreviewController: UIViewController {
     
-    private let presenter = Presenter()
+    private(set) lazy var presenter: Presenter = {
+        Presenter(onWillDismiss: { [weak self] in
+            guard let self, let currentPreviewItem else { return }
+            delegate?.previewController(self, willDismissWith: currentPreviewItem)
+        }) { [weak self] in
+            self?.delegate?.previewControllerDidDismiss()
+        }
+    }()
     
     public weak var dataSource: PreviewControllerDataSource? = nil
     public weak var delegate: PreviewControllerDelegate? = nil
@@ -33,15 +42,14 @@ open class PreviewController: UIViewController {
             previewItemAt: currentPreviewItemIndex
         )
         if let item {
-            let vc = PreviewItemViewController(
-                item,
-                index: currentPreviewItemIndex
-            )
+            let vc = createPreviewController(for: item, index: currentPreviewItemIndex)
             pageViewController.setViewControllers(
                 [vc],
                 direction: .forward,
                 animated: false
             )
+            pageViewController.navigationItem.title = item.title
+            delegate?.previewController(self, didMoveTo: item)
         }
     }
     
@@ -53,10 +61,36 @@ open class PreviewController: UIViewController {
     
     public required init?(coder: NSCoder) { fatalError() }
     
+    open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return [.portrait, .landscapeLeft, .landscapeRight]
+    }
+    
+    open override var shouldAutorotate: Bool {
+        return true
+    }
+    
+    open override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        setOrientation(to: .portrait)
+    }
+    
+    private func setOrientation(to orientation: UIInterfaceOrientation) {
+        guard let windowScene = view.window?.windowScene else { return }
+        
+        let geometryPreferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: orientation.mask)
+        
+        windowScene.requestGeometryUpdate(geometryPreferences) { error in
+            print("Failed to update geometry: \(error.localizedDescription)")
+        }
+    }
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .clear
         embed(internalNavigationController)
+        edgesForExtendedLayout = [.top, .bottom]
+        extendedLayoutIncludesOpaqueBars = true
+        pageViewController.edgesForExtendedLayout = [.top, .bottom]
+        pageViewController.extendedLayoutIncludesOpaqueBars = true
         internalNavigationController.setViewControllers([pageViewController], animated: false)
         refreshCurrentPreviewItem()
         pageViewController.delegate = self
@@ -67,10 +101,6 @@ open class PreviewController: UIViewController {
         panGesture.delegate = self
         panGesture.addTarget(self, action: #selector(onPan))
         view.addGestureRecognizer(panGesture)
-        
-        let longPressGesture = UILongPressGestureRecognizer()
-        longPressGesture.addTarget(self, action: #selector(onLongPress))
-        view.addGestureRecognizer(longPressGesture)
     }
     
     @objc private func onPan(_ gesture: UIPanGestureRecognizer) {
@@ -79,7 +109,7 @@ open class PreviewController: UIViewController {
         case .began:
             presenter.interactiveTransition = InteractiveTransition()
             wasToolbarHidden = internalNavigationController.isToolbarHidden
-            internalNavigationController.setBarHidden(true, animated: true)
+            internalNavigationController.setBarHidden(false, animated: false)
             dismiss(animated: true)
         case .changed:
             let percentComplete = translation.y / gesture.view!.bounds.height
@@ -100,7 +130,7 @@ open class PreviewController: UIViewController {
             }
             presenter.interactiveTransition?.update(abs(percentComplete))
         case .ended:
-            if abs(translation.y) > 60 {
+            if abs(translation.y) > 90 {
                 presenter.interactiveTransition?.finish()
                 presenter.interactiveTransition = nil
             } else {
@@ -117,12 +147,13 @@ open class PreviewController: UIViewController {
         }
     }
     
-    @objc private func onLongPress(_ gesture: UILongPressGestureRecognizer) {
-        guard gesture.state == .began else { return }
-        presentActivityActionTriggered()
+    private func createPreviewController(for item: PreviewItem, index: Int) -> PreviewItemViewController {
+        let vc = PreviewItemViewController(item, index: index)
+        return vc
     }
 }
 
+@MainActor
 extension PreviewController: UIGestureRecognizerDelegate {
     public func gestureRecognizerShouldBegin(
         _ gestureRecognizer: UIGestureRecognizer
@@ -134,6 +165,7 @@ extension PreviewController: UIGestureRecognizerDelegate {
     }
 }
 
+@MainActor
 extension PreviewController: UIPageViewControllerDataSource {
     public func pageViewController(
         _ pageViewController: UIPageViewController,
@@ -147,7 +179,7 @@ extension PreviewController: UIPageViewControllerDataSource {
             previewItemAt: beforeIndex
         )
         guard let item else { return nil }
-        return PreviewItemViewController(item, index: beforeIndex)
+        return createPreviewController(for: item, index: beforeIndex)
     }
     
     public func pageViewController(
@@ -164,39 +196,47 @@ extension PreviewController: UIPageViewControllerDataSource {
             previewItemAt: afterIndex
         )
         guard let item else { return nil }
-        return PreviewItemViewController(item, index: afterIndex)
+        return createPreviewController(for: item, index: afterIndex)
     }
 }
 
+@MainActor
 extension PreviewController: UIPageViewControllerDelegate {
     public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         let currentViewController = pageViewController.viewControllers?.first as? PreviewItemViewController
         if let currentViewController {
             currentPreviewItemIndex = currentViewController.index
+            pageViewController.navigationItem.title = currentPreviewItem?.title
+            if let currentPreviewItem {
+                delegate?.previewController(self, didMoveTo: currentPreviewItem)
+            }
         }
     }
 }
 
+@MainActor
 extension PreviewController: PageViewControllerUIDelegate {
     func dismissActionTriggered() {
-        internalNavigationController.setNavigationBarHidden(true, animated: true)
-        internalNavigationController.setToolbarHidden(true, animated: true)
+        internalNavigationController.setNavigationBarHidden(false, animated: false)
+        internalNavigationController.setToolbarHidden(false, animated: false)
         dismiss(animated: true)
     }
     
-    func presentActivityActionTriggered() {
-        let item = dataSource?.previewController(self, previewItemAt: currentPreviewItemIndex)
-        let configuration = item?.makeActivityItemsConfiguration()
-        guard let configuration else { return }
-        let vc = UIActivityViewController(
-            activityItemsConfiguration: configuration
-        )
-        vc.popoverPresentationController?.sourceItem = pageViewController.navigationItem.rightBarButtonItem
-        present(vc, animated: true)
+    @MainActor
+    func presentActivityActionTriggered() async {
+        guard let item = dataSource?.previewController(self, previewItemAt: currentPreviewItemIndex),
+              let items = await dataSource?.activityItems(for: item) else {
+            return
+        }
+        
+        let activityController = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        activityController.popoverPresentationController?.sourceItem = pageViewController.toolbarItems?.first
+        present(activityController, animated: true)
     }
 }
 
 // MARK: utils
+@MainActor
 extension PreviewController {
     internal var currentTransitionView: UIView? {
         guard let currentPreviewItem else { return nil }
@@ -208,9 +248,37 @@ extension PreviewController {
             .topViewController?
             .view
     }
+    
+    // returns the current view controller viewed by the page vc
+    internal var currentViewController: UIViewController? {
+        pageViewController.viewControllers?.first
+    }
 }
 
 fileprivate final class Toolbar: UIToolbar {
     // TODO: self-resizing height
     // TODO: transparency background when has any item
+}
+
+extension UIInterfaceOrientation {
+    var mask: UIInterfaceOrientationMask {
+        switch self {
+        case .portrait:
+            return .portrait
+        case .landscapeLeft:
+            return .landscapeLeft
+        case .landscapeRight:
+            return .landscapeRight
+        case .portraitUpsideDown:
+            return .portraitUpsideDown
+        default:
+            return .all
+        }
+    }
+}
+
+internal extension UIViewController {
+    var isDarkMode: Bool {
+        traitCollection.userInterfaceStyle == .dark
+    }
 }

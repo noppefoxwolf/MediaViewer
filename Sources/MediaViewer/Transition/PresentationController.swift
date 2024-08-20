@@ -1,34 +1,91 @@
 import UIKit
 
+struct PresentationConsts {
+    static let transitionViewTag = 602
+    static let backgroundViewTag = 601
+}
+
+@MainActor
 final class PresentationController: UIPresentationController {
+    
+    var onWillDismiss:(() -> Void)?
+    
     override func presentationTransitionWillBegin() {
-        containerView?.backgroundColor = .clear
-        containerView?.addSubview(presentedView!)
-        let previewController = presentedViewController as! PreviewController
         
-        previewController
-            .topView?
-            .alpha = 0
+        guard let previewController = presentedViewController as? PreviewController,
+              let containerView,
+              let presentedView,
+              let transitionView = previewController.currentTransitionView,
+              let topView = previewController.topView else { return }
         
-        let fromTransition: CGAffineTransform
-        let fromScale: Double
-        let transitionView = previewController.currentTransitionView
-        if let containerView, let transitionView {
-            let point = transitionView
-                .convert(transitionView.bounds, to: containerView)
-                .applying(.init(
-                    translationX: -containerView.center.x,
-                    y: -containerView.center.y
-                ))
-            fromTransition = CGAffineTransform(translationX: point.midX, y: point.midY)
-            fromScale = transitionView.bounds.width / containerView.bounds.width
+        containerView.backgroundColor = .clear
+        containerView.addSubview(presentedView)
+
+        previewController.topView?.alpha = 0.0
+        
+        let transitionImage: UIImage?
+        if let cgImage = (transitionView as? UIImageView)?.image?.cgImage {
+            transitionImage = UIImage(cgImage: cgImage)
         } else {
-            fromTransition = .identity
-            fromScale = 0.85
+            let renderer = UIGraphicsImageRenderer(bounds: transitionView.bounds)
+            transitionImage = renderer.image { rendererContext in
+                transitionView.layer.render(in: rendererContext.cgContext)
+            }
         }
-        previewController
-            .topView?
-            .transform = fromTransition.scaledBy(x: fromScale, y: fromScale)
+        
+        let transitionImageView = UIImageView(image: transitionImage)
+        transitionImageView.tag = PresentationConsts.transitionViewTag
+        transitionImageView.contentMode = .scaleAspectFill
+        
+        transitionImageView.clipsToBounds = true
+        transitionView.alpha = 0.0
+        
+        let navController = previewController.internalNavigationController
+        navController.view.addSubview(transitionImageView)
+        navController.view.bringSubviewToFront(navController.navigationBar)
+        navController.view.bringSubviewToFront(navController.toolbar)
+        transitionImageView.frame = transitionView.convert(transitionView.bounds,
+                                                           to: navController.view)
+        
+        containerView.bringSubviewToFront(presentedView)
+        
+    }
+    
+    override func dismissalTransitionWillBegin() {
+        
+        guard let previewController = presentedViewController as? PreviewController,
+              let dismissedController = previewController.currentViewController as? DismissTransitionViewProviding,
+              let dismissedView = dismissedController.viewForDismissTransition,
+              let containerView else { return }
+                
+        let transitionImage: UIImage?
+        if let cgImage = (dismissedView as? UIImageView)?.image?.cgImage {
+            transitionImage = UIImage(cgImage: cgImage)
+        } else {
+            let renderer = UIGraphicsImageRenderer(bounds: dismissedView.bounds)
+            transitionImage = renderer.image { rendererContext in
+                dismissedView.layer.render(in: rendererContext.cgContext)
+            }
+        }
+        
+        let transitionImageView = UIImageView(image: transitionImage)
+        transitionImageView.tag = PresentationConsts.transitionViewTag
+        transitionImageView.contentMode = .scaleAspectFill
+        
+        containerView.addSubview(transitionImageView)
+        transitionImageView.frame = dismissedView.convert(dismissedView.bounds, to: containerView)
+        transitionImageView.clipsToBounds = true
+       
+        previewController.topView?.alpha = 0.0
+        
+        if let transitionView = previewController.currentTransitionView {
+            transitionView.alpha = 0.0
+            transitionView.setNeedsDisplay()
+            transitionView.layoutIfNeeded()
+            CATransaction.flush()
+        }
+                
+        onWillDismiss?()
     }
     
     override func dismissalTransitionDidEnd(_ completed: Bool) {

@@ -2,17 +2,22 @@ import UIKit
 
 extension UIViewController {
     func embed(_ viewController: UIViewController) {
+        viewController.extendedLayoutIncludesOpaqueBars = true
+        viewController.edgesForExtendedLayout = [.top, .bottom]
         viewController.willMove(toParent: self)
         view.addSubview(viewController.view)
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(viewController)
         viewController.didMove(toParent: self)
+        guard let vcView = viewController.view else {
+            return
+        }
         NSLayoutConstraint.activate([
-            viewController.view.topAnchor.constraint(equalTo: view.topAnchor),
-            view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor),
-            viewController.view.leftAnchor.constraint(equalTo: view.leftAnchor),
-            view.rightAnchor.constraint(equalTo: viewController.view.rightAnchor),
-        ])
+            vcView.topAnchor.constraint(equalTo: view.topAnchor),
+            vcView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            vcView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            vcView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ])
     }
     
     func digup() {

@@ -1,16 +1,24 @@
 import UIKit
 
+@MainActor
 final class NavigationController: WorkaroundNavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = isDarkMode ? .black : .white
         setBarHidden(false, animated: false)
         
-        navigationBar.standardAppearance.configureWithTransparentBackground()
-        navigationBar.tintColor = .white
+        let navigationBarAppearance = UINavigationBarAppearance()
+        navigationBarAppearance.titleTextAttributes = [
+            .font: UIFont.systemFont(ofSize: 14, weight: .regular),
+            .foregroundColor: UIColor.label
+        ]
+        navigationBar.standardAppearance = navigationBarAppearance
+        navigationBar.scrollEdgeAppearance = navigationBarAppearance
+
+        let toolbarAppearance = UIToolbarAppearance()
+        toolbar.standardAppearance = toolbarAppearance
         
-        toolbar.standardAppearance = UIToolbarAppearance()
-        toolbar.standardAppearance.configureWithTransparentBackground()
-        toolbar.tintColor = .white
+        edgesForExtendedLayout = [.top]
         
         hidesBarsOnTap = true
     }
@@ -19,4 +27,5 @@ final class NavigationController: WorkaroundNavigationController {
         setNavigationBarHidden(hidden, animated: animated)
         setToolbarHidden(hidden, animated: animated)
     }
+    
 }

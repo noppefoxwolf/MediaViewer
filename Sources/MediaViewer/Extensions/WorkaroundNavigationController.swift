@@ -1,9 +1,15 @@
 import UIKit
 
+@MainActor
 open class WorkaroundNavigationController: UINavigationController {
     
     // workaround: always use hidesBarsOnTap
-    private let tapGesture = UITapGestureRecognizer()
+    private lazy var tapGesture: UITapGestureRecognizer = {
+        let recognizer = UITapGestureRecognizer()
+        recognizer.delegate = self
+        return recognizer
+    }()
+    
     open override var hidesBarsOnTap: Bool {
         get {
             tapGesture.view != nil
@@ -17,8 +23,19 @@ open class WorkaroundNavigationController: UINavigationController {
     }
     
     @objc private func onTap(_ gesture: UITapGestureRecognizer) {
+        // don't do anything if the tap was on the nav bar or tool bar
+        let location = gesture.location(in: view)
+        if navigationBar.frame.contains(location) || toolbar.frame.contains(location) {
+            return
+        }
         setToolbarHidden(!isToolbarHidden, animated: true)
         setNavigationBarHidden(!isNavigationBarHidden, animated: true)
+        if isDarkMode == false { // only toggle background color on light mode
+            let hidden = isNavigationBarHidden
+            UIView.animate(withDuration: 0.2) {
+                self.view.backgroundColor = hidden ? .black : .white
+            }
+        }
     }
     
     // workaround: No re-layout when navigation bar is hidden
@@ -74,5 +91,15 @@ open class WorkaroundNavigationController: UINavigationController {
             self?.toolbar.transform = toTransform
         }
         animator.startAnimation()
+    }
+}
+
+extension WorkaroundNavigationController: UIGestureRecognizerDelegate {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        if let doubleTap = otherGestureRecognizer as? UITapGestureRecognizer,
+           doubleTap.numberOfTapsRequired == 2 {
+            return true
+        }
+        return false
     }
 }
