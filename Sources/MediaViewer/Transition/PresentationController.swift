@@ -15,8 +15,17 @@ final class PresentationController: UIPresentationController {
         guard let previewController = presentedViewController as? PreviewController,
               let containerView,
               let presentedView,
-              let transitionView = previewController.currentTransitionView,
-              let topView = previewController.topView else { return }
+              let topView = previewController.topView else {
+            return
+        }
+        
+        guard let transitionView = previewController.currentTransitionView else {
+            print("No transition view was supplied to MediaViewer.PreviewViewController. Transitioning without animation.")
+            containerView.backgroundColor = .clear
+            containerView.addSubview(presentedView)
+            previewController.topView?.alpha = 0.0
+            return
+        }
         
         containerView.backgroundColor = .clear
         containerView.addSubview(presentedView)
