@@ -9,6 +9,7 @@ struct PresentationConsts {
 final class PresentationController: UIPresentationController {
     
     var onWillDismiss:(() -> Void)?
+    var onPresented:(() -> Void)?
     
     override func presentationTransitionWillBegin() {
         
@@ -58,6 +59,11 @@ final class PresentationController: UIPresentationController {
         
         containerView.bringSubviewToFront(presentedView)
         
+    }
+    
+    override func presentationTransitionDidEnd(_ completed: Bool) {
+        guard completed else { return }
+        onPresented?()
     }
     
     override func dismissalTransitionWillBegin() {
