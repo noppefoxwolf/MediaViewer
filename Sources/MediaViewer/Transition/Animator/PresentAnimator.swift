@@ -27,6 +27,7 @@ final class PresentAnimator: Animator {
             
             animator.addAnimations {
                 previewController.topView?.alpha = 1
+                previewController.internalNavigationController.backgroundView.alpha = 1.0
             }
             animator.addCompletion { _ in
                 previewController.currentTransitionView?.alpha = 1
@@ -40,6 +41,7 @@ final class PresentAnimator: Animator {
         
         animator.addAnimations {
             transitionImageView.frame = targetRect
+            previewController.internalNavigationController.backgroundView.alpha = 1.0
         }
         
         animator.addCompletion { _ in

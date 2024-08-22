@@ -3,6 +3,8 @@ import UIKit
 @MainActor
 open class WorkaroundNavigationController: UINavigationController {
     
+    let backgroundView = UIView()
+    
     // workaround: always use hidesBarsOnTap
     private lazy var tapGesture: UITapGestureRecognizer = {
         let recognizer = UITapGestureRecognizer()
@@ -33,7 +35,7 @@ open class WorkaroundNavigationController: UINavigationController {
         if isDarkMode == false { // only toggle background color on light mode
             let hidden = isNavigationBarHidden
             UIView.animate(withDuration: 0.2) {
-                self.view.backgroundColor = hidden ? .black : .white
+                self.backgroundView.backgroundColor = hidden ? .black : .white
             }
         }
     }
