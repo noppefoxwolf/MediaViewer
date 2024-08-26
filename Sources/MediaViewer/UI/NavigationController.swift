@@ -4,7 +4,16 @@ import UIKit
 final class NavigationController: WorkaroundNavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = isDarkMode ? .black : .white
+        backgroundView.backgroundColor = isDarkMode ? .black : .white
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(backgroundView)
+        view.sendSubviewToBack(backgroundView)
+        NSLayoutConstraint.activate([
+            backgroundView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
+        ])
         setBarHidden(false, animated: false)
         
         let navigationBarAppearance = UINavigationBarAppearance()

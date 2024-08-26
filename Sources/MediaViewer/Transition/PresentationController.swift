@@ -32,7 +32,7 @@ final class PresentationController: UIPresentationController {
         containerView.addSubview(presentedView)
 
         previewController.topView?.alpha = 0.0
-        
+        previewController.internalNavigationController.backgroundView.alpha = 0.0
         let transitionImage: UIImage?
         if let cgImage = (transitionView as? UIImageView)?.image?.cgImage {
             transitionImage = UIImage(cgImage: cgImage)
