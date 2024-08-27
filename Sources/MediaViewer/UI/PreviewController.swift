@@ -106,6 +106,18 @@ open class PreviewController: UIViewController {
         view.addGestureRecognizer(panGesture)
     }
     
+    public func updateCurrentIndex(to newIndex: Int) {
+        currentPreviewItemIndex = newIndex
+        if let currentViewController = currentViewController as? PreviewItemViewController{
+            currentViewController.index = newIndex
+            // we set the view controllers array to the current one to clear
+            // the side vc's and force asking the delegate on next swipe for next/prev vc's.
+            pageViewController.setViewControllers([currentViewController],
+                                                  direction: .forward,
+                                                  animated: false)
+        }
+    }
+    
     @objc private func onPan(_ gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: gesture.view)
         switch gesture.state {
