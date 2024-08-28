@@ -64,6 +64,12 @@ open class PreviewController: UIViewController {
         setOrientation(to: .portrait)
     }
     
+    public func reloadData() {
+        if let currentPreviewItem {
+            fetchItemsIfNeeded(around: currentPreviewItem)
+        }
+    }
+    
     private func setOrientation(to orientation: UIInterfaceOrientation) {
         guard let windowScene = view.window?.windowScene else { return }
         
