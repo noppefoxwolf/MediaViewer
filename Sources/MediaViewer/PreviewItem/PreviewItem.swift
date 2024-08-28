@@ -2,6 +2,7 @@ import UIKit
 
 @MainActor
 public protocol PreviewItem {
+    var uid: String { get }
     var title: String? { get }
     var onLoadError: ((Error) -> Void)? { get }
     func makeViewController() async throws -> UIViewController

@@ -4,7 +4,6 @@ import UIKit
 final class PreviewItemViewController: UIViewController, DismissTransitionViewProviding {
     
     let previewItem: any PreviewItem
-    var index: Int
     var readyToPreviewTask: Task<Void, any Error>? = nil
     
     var viewForDismissTransitionStartFrame: UIView? {
@@ -23,7 +22,6 @@ final class PreviewItemViewController: UIViewController, DismissTransitionViewPr
     
     init(_ previewItem: any PreviewItem, index: Int) {
         self.previewItem = previewItem
-        self.index = index
         super.init(nibName: nil, bundle: nil)
     }
     

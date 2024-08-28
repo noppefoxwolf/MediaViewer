@@ -4,6 +4,8 @@ import AVFoundation
 @MainActor
 open class PreviewController: UIViewController {
     
+    private var previewItems: [any PreviewItem]
+    
     private(set) lazy var presenter: Presenter = {
         Presenter(onPresented: { [weak self] in
             guard let self else { return }
@@ -31,32 +33,17 @@ open class PreviewController: UIViewController {
         navigationOrientation: .horizontal,
         options: [.interPageSpacing : UIStackView.spacingUseSystem]
     )
-    
-    public var currentPreviewItemIndex: Int = 0
-    
-    public var currentPreviewItem: (any PreviewItem)? {
-        dataSource?.previewController(self, previewItemAt: currentPreviewItemIndex)
-    }
-    
-    public func refreshCurrentPreviewItem() {
         
-        let item = dataSource?.previewController(
-            self,
-            previewItemAt: currentPreviewItemIndex
-        )
-        if let item {
-            let vc = createPreviewController(for: item, index: currentPreviewItemIndex)
-            pageViewController.setViewControllers(
-                [vc],
-                direction: .forward,
-                animated: false
-            )
-            pageViewController.navigationItem.title = item.title
-            delegate?.previewController(self, didMoveTo: item)
+    public var currentPreviewItem: (any PreviewItem)? {
+        guard let currentController = pageViewController.viewControllers?.first as? PreviewItemViewController else { return nil }
+        return previewItems.first {
+            $0.uid == currentController.previewItem.uid
         }
+        
     }
     
-    public init() {
+    public init(previewItem: any PreviewItem) {
+        previewItems = [previewItem]
         super.init(nibName: nil, bundle: nil)
         transitioningDelegate = presenter
         modalPresentationStyle = .custom
@@ -87,6 +74,21 @@ open class PreviewController: UIViewController {
         }
     }
     
+    private func loadFirstPreviewItem() {
+        
+        if let item = previewItems.first {
+            let vc = createPreviewController(for: item, index: 0)
+            pageViewController.setViewControllers(
+                [vc],
+                direction: .forward,
+                animated: false
+            )
+            pageViewController.navigationItem.title = item.title
+            delegate?.previewController(self, didMoveTo: item)
+            fetchItemsIfNeeded(around: item)
+        }
+    }
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
         embed(internalNavigationController)
@@ -95,7 +97,6 @@ open class PreviewController: UIViewController {
         pageViewController.edgesForExtendedLayout = [.top, .bottom]
         pageViewController.extendedLayoutIncludesOpaqueBars = true
         internalNavigationController.setViewControllers([pageViewController], animated: false)
-        refreshCurrentPreviewItem()
         pageViewController.delegate = self
         pageViewController.dataSource = self
         pageViewController.uiDelegate = self
@@ -104,18 +105,7 @@ open class PreviewController: UIViewController {
         panGesture.delegate = self
         panGesture.addTarget(self, action: #selector(onPan))
         view.addGestureRecognizer(panGesture)
-    }
-    
-    public func updateCurrentIndex(to newIndex: Int) {
-        currentPreviewItemIndex = newIndex
-        if let currentViewController = currentViewController as? PreviewItemViewController{
-            currentViewController.index = newIndex
-            // we set the view controllers array to the current one to clear
-            // the side vc's and force asking the delegate on next swipe for next/prev vc's.
-            pageViewController.setViewControllers([currentViewController],
-                                                  direction: .forward,
-                                                  animated: false)
-        }
+        loadFirstPreviewItem()
     }
     
     @objc private func onPan(_ gesture: UIPanGestureRecognizer) {
@@ -166,6 +156,35 @@ open class PreviewController: UIViewController {
         let vc = PreviewItemViewController(item, index: index)
         return vc
     }
+    
+    private func fetchItemsIfNeeded(around item: any PreviewItem) {
+        guard let dataSource, let index = previewItems.firstIndex(where: {
+            $0.uid == item.uid
+        }) else { return }
+        let itemsCount = previewItems.count
+        Task { @MainActor in
+            if index == 0 {
+                let beforeItems = await dataSource.previewController(self, previewItemsBefore: item)
+                guard beforeItems.count > 0  else { return }
+                previewItems.insert(contentsOf: beforeItems, at: 0)
+                if let currentController = pageViewController.viewControllers?.first {
+                    pageViewController.setViewControllers([currentController],
+                                                          direction: .forward,
+                                                          animated: false)
+                }
+            }
+            if index == itemsCount - 1 {
+                let afterItems = await dataSource.previewController(self, previewItemsAfter: item)
+                guard afterItems.count > 0  else { return }
+                previewItems.append(contentsOf: afterItems)
+                if let currentController = pageViewController.viewControllers?.first {
+                    pageViewController.setViewControllers([currentController],
+                                                          direction: .forward,
+                                                          animated: false)
+                }
+            }
+        }
+    }
 }
 
 @MainActor
@@ -186,45 +205,43 @@ extension PreviewController: UIPageViewControllerDataSource {
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController
     ) -> UIViewController? {
-        let previewItemViewController = viewController as! PreviewItemViewController
-        let beforeIndex = previewItemViewController.index - 1
-        guard beforeIndex >= 0 else { return nil }
-        let item = dataSource?.previewController(
-            self,
-            previewItemAt: beforeIndex
-        )
-        guard let item else { return nil }
-        return createPreviewController(for: item, index: beforeIndex)
+        guard let previewItemViewController = viewController as? PreviewItemViewController,
+              let index = previewItems.firstIndex(where: { $0.uid == previewItemViewController.previewItem.uid }) else {
+                  return nil
+              }
+        let beforeIndex = index - 1
+        guard beforeIndex < previewItems.count && beforeIndex >= 0 else { return nil }
+        return createPreviewController(for: previewItems[beforeIndex], index: beforeIndex)
     }
     
     public func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerAfter viewController: UIViewController
     ) -> UIViewController? {
-        let previewItemViewController = viewController as! PreviewItemViewController
-        let afterIndex = previewItemViewController.index + 1
-        let itemsCount = dataSource?.numberOfPreviewItems(in: self)
-        guard let itemsCount else { return nil }
-        guard afterIndex < itemsCount else { return nil }
-        let item = dataSource?.previewController(
-            self,
-            previewItemAt: afterIndex
-        )
-        guard let item else { return nil }
-        return createPreviewController(for: item, index: afterIndex)
+        guard let previewItemViewController = viewController as? PreviewItemViewController,
+              let index = previewItems.firstIndex(where: { $0.uid == previewItemViewController.previewItem.uid }) else {
+                  return nil
+              }
+        let afterIndex = index + 1
+        guard previewItems.count > 0 else { return nil }
+        guard afterIndex < previewItems.count && afterIndex >= 0 else { return nil }
+        return createPreviewController(for: previewItems[afterIndex], index: afterIndex)
     }
 }
 
 @MainActor
 extension PreviewController: UIPageViewControllerDelegate {
+    
+    public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+        if let itemController = pendingViewControllers.first as? PreviewItemViewController {
+            fetchItemsIfNeeded(around: itemController.previewItem)
+        }
+    }
+    
     public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        let currentViewController = pageViewController.viewControllers?.first as? PreviewItemViewController
-        if let currentViewController {
-            currentPreviewItemIndex = currentViewController.index
-            pageViewController.navigationItem.title = currentPreviewItem?.title
-            if let currentPreviewItem {
-                delegate?.previewController(self, didMoveTo: currentPreviewItem)
-            }
+        if let currentPreviewItem {
+            pageViewController.navigationItem.title = currentPreviewItem.title
+            delegate?.previewController(self, didMoveTo: currentPreviewItem)
         }
     }
 }
@@ -239,7 +256,7 @@ extension PreviewController: PageViewControllerUIDelegate {
     
     @MainActor
     func presentActivityActionTriggered() async {
-        guard let item = dataSource?.previewController(self, previewItemAt: currentPreviewItemIndex),
+        guard let item = currentPreviewItem,
               let items = await dataSource?.activityItems(for: item) else {
             return
         }
