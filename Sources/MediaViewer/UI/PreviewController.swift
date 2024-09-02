@@ -171,22 +171,24 @@ open class PreviewController: UIViewController {
         Task { @MainActor in
             if index == 0 {
                 let beforeItems = await dataSource.previewController(self, previewItemsBefore: item)
-                guard beforeItems.count > 0  else { return }
-                previewItems.insert(contentsOf: beforeItems, at: 0)
-                if let currentController = pageViewController.viewControllers?.first {
-                    pageViewController.setViewControllers([currentController],
-                                                          direction: .forward,
-                                                          animated: false)
+                if beforeItems.count > 0 {
+                    previewItems.insert(contentsOf: beforeItems, at: 0)
+                    if let currentController = pageViewController.viewControllers?.first {
+                        pageViewController.setViewControllers([currentController],
+                                                              direction: .forward,
+                                                              animated: false)
+                    }
                 }
             }
             if index == itemsCount - 1 {
                 let afterItems = await dataSource.previewController(self, previewItemsAfter: item)
-                guard afterItems.count > 0  else { return }
-                previewItems.append(contentsOf: afterItems)
-                if let currentController = pageViewController.viewControllers?.first {
-                    pageViewController.setViewControllers([currentController],
-                                                          direction: .forward,
-                                                          animated: false)
+                if afterItems.count > 0 {
+                    previewItems.append(contentsOf: afterItems)
+                    if let currentController = pageViewController.viewControllers?.first {
+                        pageViewController.setViewControllers([currentController],
+                                                              direction: .forward,
+                                                              animated: false)
+                    }
                 }
             }
         }
