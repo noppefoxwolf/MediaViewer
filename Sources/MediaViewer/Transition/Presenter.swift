@@ -5,10 +5,13 @@ final class Presenter: NSObject, UIViewControllerTransitioningDelegate {
     var interactiveTransition: InteractiveTransition? = nil
     var reversedDismiss: Bool = false
     private let onDismissed: (() -> Void)?
+    private let onPresented: (() -> Void)?
     private let onWillDismiss:(() -> Void)?
     
-    init(onWillDismiss:(() -> Void)? = nil,
+    init(onPresented: (() -> Void)? = nil,
+         onWillDismiss:(() -> Void)? = nil,
          onDismissed: (() -> Void)? = nil) {
+        self.onPresented = onPresented
         self.onDismissed = onDismissed
         self.onWillDismiss = onWillDismiss
         super.init()
@@ -24,6 +27,7 @@ final class Presenter: NSObject, UIViewControllerTransitioningDelegate {
             presenting: presenting
         )
         controller.onWillDismiss = onWillDismiss
+        controller.onPresented = onPresented
         return controller
     }
     

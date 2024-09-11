@@ -3,8 +3,8 @@ import QuickLook
 
 @MainActor
 public protocol PreviewControllerDataSource: AnyObject {
-    func numberOfPreviewItems(in controller: PreviewController) -> Int
-    func previewController(_ controller: PreviewController, previewItemAt index: Int) -> any PreviewItem
+    func previewController(_ controller: PreviewController, previewItemsBefore item: any PreviewItem) async -> [any PreviewItem]
+    func previewController(_ controller: PreviewController, previewItemsAfter item: any PreviewItem) async -> [any PreviewItem]
     func activityItems(for item: PreviewItem) async -> [Any]?
 }
 

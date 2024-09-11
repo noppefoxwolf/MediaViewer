@@ -25,9 +25,9 @@ final class DismissAnimator: Animator {
             
             previewController.currentTransitionView?.isHidden = false
             previewController.currentTransitionView?.alpha = 1.0
-            container.viewWithTag(PresentationConsts.transitionViewTag)?.removeFromSuperview()
             
             animator.addAnimations {
+                container.viewWithTag(PresentationConsts.transitionViewTag)?.alpha = 0.0
                 transitionContext.viewController(forKey: .from)?.view.alpha = 0.0
             }
             
@@ -35,6 +35,10 @@ final class DismissAnimator: Animator {
                 let didComplete = !transitionContext.transitionWasCancelled
                 if didComplete {
                     self.onDismissed?()
+                } else {
+                    container.viewWithTag(PresentationConsts.transitionViewTag)?.removeFromSuperview()
+                    transitionContext.viewController(forKey: .from)?.view.alpha = 1.0
+                    previewController.topView?.alpha = 1.0
                 }
                 transitionContext.completeTransition(didComplete)
             }

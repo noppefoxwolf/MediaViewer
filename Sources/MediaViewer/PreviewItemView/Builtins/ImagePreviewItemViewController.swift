@@ -8,6 +8,7 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
     let doubleTapGesture = UITapGestureRecognizer()
     
     private var viewAppeared = false
+    private var userDidZoom = false
     
     public init(image: UIImage) {
         imageView = UIImageView(image: image)
@@ -56,7 +57,11 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
     
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updateZoomScaleForSize(view.bounds.size)
+        // layoutSV is called when the user scrolls, and we don't wont it at that stage
+        guard userDidZoom == false else { return }
+        // on every layout that isn't user initiated, force an update to make sure the image
+        // is aligned correctly
+        updateZoomScaleForSize(view.bounds.size, force: true)
     }
     
     public override func viewDidAppear(_ animated: Bool) {
@@ -126,6 +131,10 @@ public final class ImagePreviewItemViewController: UIViewController, UIScrollVie
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
         updateScrollInsets()
+        // if the view appeared, this is a user initiated scroll
+        if viewAppeared {
+            userDidZoom = true
+        }
     }
     
     private func updateScrollInsets() {
