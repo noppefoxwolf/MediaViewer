@@ -1,4 +1,4 @@
-// swift-tools-version: 5.10
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -25,29 +25,3 @@ let package = Package(
         ),
     ]
 )
-
-// Only development
-
-let warnConcurrency = "-warn-concurrency"
-let enableActorDataRaceChecks = "-enable-actor-data-race-checks"
-let swiftSettings: [SwiftSetting] = [
-    .enableUpcomingFeature("ForwardTrailingClosures"),
-    .enableUpcomingFeature("ExistentialAny"),
-    .enableUpcomingFeature("BareSlashRegexLiterals"),
-    .enableUpcomingFeature("ConciseMagicFile"),
-    .enableUpcomingFeature("ImportObjcForwardDeclarations"),
-    .enableUpcomingFeature("DisableOutwardActorInference"),
-    .enableUpcomingFeature("DeprecateApplicationMain"),
-    .enableUpcomingFeature("IsolatedDefaultValues"),
-    .enableUpcomingFeature("GlobalConcurrency"),
-    .unsafeFlags([
-        warnConcurrency,
-        enableActorDataRaceChecks,
-    ]),
-]
-
-package.targets.forEach { target in
-    target.swiftSettings = target.swiftSettings ?? []
-    target.swiftSettings?.append(contentsOf: swiftSettings)
-}
-

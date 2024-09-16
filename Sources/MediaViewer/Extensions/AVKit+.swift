@@ -1,4 +1,4 @@
-import AVKit
+@preconcurrency import AVKit
 
 extension AVAsset {
     func makeThumbnailImage() async -> UIImage? {
