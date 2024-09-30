@@ -1,6 +1,6 @@
 import UIKit
 import AVKit
-import VideoToolbox
+import Combine
 import os
 
 fileprivate let logger = Logger(
@@ -10,14 +10,49 @@ fileprivate let logger = Logger(
 
 @MainActor
 public final class PlayerPreviewItemViewController: AVPlayerViewController {
+    private var cancellables = Set<AnyCancellable>()
+    
+    public var willStartPlayingMovie: (() -> Void)?
+    public var didStopPlayingMovie: (() -> Void)?
+    
+    public let identifier = UUID().uuidString
     
     public init(player: AVPlayer) {
         super.init(nibName: nil, bundle: nil)
+        requiresLinearPlayback = false
+        updatesNowPlayingInfoCenter = false
         self.player = player
         allowsPictureInPicturePlayback = false
+        setupObservers()
     }
     
     required init?(coder: NSCoder) { fatalError() }
+    
+    private func setupObservers() {
+        guard let player = player else { return }
+        
+        player.publisher(for: \.timeControlStatus)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                switch status {
+                case .paused:
+                    self?.didStopPlayingMovie?()
+                case .waitingToPlayAtSpecifiedRate:
+                    self?.willStartPlayingMovie?()
+                @unknown default:
+                    break
+                }
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.didStopPlayingMovie?()
+            }
+            .store(in: &cancellables)
+        
+    }
     
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
