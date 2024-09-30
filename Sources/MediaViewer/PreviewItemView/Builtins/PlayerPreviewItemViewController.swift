@@ -32,6 +32,7 @@ public final class PlayerPreviewItemViewController: AVPlayerViewController {
         guard let player = player else { return }
         
         player.publisher(for: \.timeControlStatus)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] status in
                 switch status {
                 case .paused:
@@ -45,6 +46,7 @@ public final class PlayerPreviewItemViewController: AVPlayerViewController {
             .store(in: &cancellables)
         
         NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.didStopPlayingMovie?()
             }
