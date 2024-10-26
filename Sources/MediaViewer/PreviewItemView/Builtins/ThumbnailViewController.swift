@@ -1,4 +1,4 @@
-import UIKit
+public import UIKit
 
 public final class ThumbnailViewController: UIViewController {
     let thumbnailImageView = UIImageView()

@@ -1,4 +1,4 @@
-import UIKit
+public import UIKit
 
 open class Animator: NSObject, UIViewControllerAnimatedTransitioning {
     open func transitionDuration(

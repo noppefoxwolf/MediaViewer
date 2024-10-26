@@ -1,4 +1,4 @@
-import UIKit
+public import UIKit
 
 extension UIImage: PreviewItem {
     public func makeViewController() async -> UIViewController {

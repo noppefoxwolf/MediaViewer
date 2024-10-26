@@ -1,13 +1,13 @@
-import UIKit
-import AVKit
+public import UIKit
+public import AVKit
 import os
 
-fileprivate let logger = Logger(
-    subsystem: Bundle.main.bundleIdentifier! + ".logger",
-    category: #file
-)
-
 public final class PlayerPreviewItemViewController: UIViewController {
+    let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier!,
+        category: #file
+    )
+
     private let playerView = AVPlayerView()
     
     let player: AVPlayer

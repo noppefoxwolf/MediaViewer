@@ -1,4 +1,4 @@
-import UIKit
+public import UIKit
 
 public final class ImagePreviewItemViewController: UIViewController, UIScrollViewDelegate {
 

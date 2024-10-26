@@ -1,4 +1,4 @@
-import AVKit
+public import AVKit
 import UIKit
 
 extension AVPlayer: PreviewItem {

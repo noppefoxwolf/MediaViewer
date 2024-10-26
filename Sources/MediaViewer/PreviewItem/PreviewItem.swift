@@ -1,4 +1,4 @@
-import UIKit
+public import UIKit
 
 public protocol PreviewItem {
     @MainActor
