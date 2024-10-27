@@ -35,7 +35,7 @@ open class WorkaroundNavigationController: UINavigationController {
     }
     
     public override func setNavigationBarHidden(_ hidden: Bool, animated: Bool) {
-        isNavigationBarHidden = hidden
+        guard isNavigationBarHidden != hidden else { return }
         let toTransform: CGAffineTransform
         if hidden {
             toTransform = CGAffineTransform(
@@ -52,11 +52,14 @@ open class WorkaroundNavigationController: UINavigationController {
         animator.addAnimations { [weak self] in
             self?.navigationBar.transform = toTransform
         }
+        animator.addCompletion { [weak self] _ in
+            self?.isNavigationBarHidden = hidden
+        }
         animator.startAnimation()
     }
     
     public override func setToolbarHidden(_ hidden: Bool, animated: Bool) {
-        isToolbarHidden = hidden
+        guard isToolbarHidden != hidden else { return }
         let toTransform: CGAffineTransform
         if hidden {
             toTransform = CGAffineTransform(
@@ -72,6 +75,9 @@ open class WorkaroundNavigationController: UINavigationController {
         )
         animator.addAnimations { [weak self] in
             self?.toolbar.transform = toTransform
+        }
+        animator.addCompletion { [weak self] _ in
+            self?.isToolbarHidden = hidden
         }
         animator.startAnimation()
     }
