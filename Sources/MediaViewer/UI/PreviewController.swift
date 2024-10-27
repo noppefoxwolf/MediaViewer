@@ -1,6 +1,11 @@
 public import UIKit
+import os
 
 open class PreviewController: UIViewController {
+    let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier!,
+        category: #file
+    )
     
     private let presenter = Presenter()
     
