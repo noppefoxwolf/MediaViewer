@@ -11,6 +11,10 @@ let package = Package(
             name: "MediaViewer",
             targets: ["MediaViewer"]
         ),
+        .library(
+            name: "MediaViewerBuiltins",
+            targets: ["MediaViewerBuiltins"]
+        )
     ],
     dependencies: [
         /* No dependencies!! */
@@ -18,6 +22,12 @@ let package = Package(
     targets: [
         .target(
             name: "MediaViewer"
+        ),
+        .target(
+            name: "MediaViewerBuiltins",
+            dependencies: [
+                "MediaViewer"
+            ]
         ),
         .testTarget(
             name: "MediaViewerTests",

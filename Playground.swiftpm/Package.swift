@@ -42,7 +42,8 @@ let package = Package(
         .executableTarget(
             name: "AppModule",
             dependencies: [
-                .product(name: "MediaViewer", package: "MediaViewer")
+                .product(name: "MediaViewer", package: "mediaviewer"),
+                .product(name: "MediaViewerBuiltins", package: "mediaviewer")
             ],
             path: "."
         )

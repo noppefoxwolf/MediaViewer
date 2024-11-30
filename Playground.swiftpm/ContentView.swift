@@ -2,6 +2,7 @@ import SwiftUI
 import AVFoundation
 import UIKit
 import MediaViewer
+import MediaViewerBuiltins
 
 struct ContentView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> some UIViewController {

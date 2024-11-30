@@ -1,4 +1,5 @@
 public import UIKit
+import MediaViewer
 
 extension UIImage: PreviewItem {
     public func makeViewController() async -> UIViewController {
