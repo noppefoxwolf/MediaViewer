@@ -42,7 +42,7 @@ extension Item {
     }
 }
 
-class ViewController: UICollectionViewController {
+final class ViewController: UICollectionViewController {
     let cellRegistration = UICollectionView.CellRegistration(
         handler: { (cell: UICollectionViewCell, indexPath, item: Item) in
             cell.contentConfiguration = UIHostingConfiguration(content: {
