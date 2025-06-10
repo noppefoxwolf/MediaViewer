@@ -19,7 +19,10 @@ final class PageViewController: UIPageViewController {
                 self?.uiDelegate?.dismissActionTriggered()
             }
         )
-        navigationItem.leftBarButtonItem?.setBackgroundImage(.makeBarBackground(), for: .normal, barMetrics: .default)
+        
+        if #unavailable(iOS 19) {
+            navigationItem.leftBarButtonItem?.setBackgroundImage(.makeBarBackground(), for: .normal, barMetrics: .default)
+        }
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "ellipsis"),
@@ -27,6 +30,9 @@ final class PageViewController: UIPageViewController {
                 self?.uiDelegate?.presentActivityActionTriggered()
             }
         )
-        navigationItem.rightBarButtonItem?.setBackgroundImage(.makeBarBackground(), for: .normal, barMetrics: .default)
+        
+        if #unavailable(iOS 19) {
+            navigationItem.rightBarButtonItem?.setBackgroundImage(.makeBarBackground(), for: .normal, barMetrics: .default)
+        }
     }
 }

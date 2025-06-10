@@ -30,11 +30,13 @@ final class PresentAnimator: Animator {
                 .transform = .identity
         }
         animator.addCompletion { _ in
-            previewController
-                .currentTransitionView?
-                .alpha = 1
-            let didComplete = !transitionContext.transitionWasCancelled
-            transitionContext.completeTransition(didComplete)
+            DispatchQueue.main.async {
+                previewController
+                    .currentTransitionView?
+                    .alpha = 1
+                let didComplete = !transitionContext.transitionWasCancelled
+                transitionContext.completeTransition(didComplete)
+            }
         }
         return animator
     }

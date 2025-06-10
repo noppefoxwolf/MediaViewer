@@ -53,7 +53,9 @@ open class WorkaroundNavigationController: UINavigationController {
             self?.navigationBar.transform = toTransform
         }
         animator.addCompletion { [weak self] _ in
-            self?.isNavigationBarHidden = hidden
+            DispatchQueue.main.async {
+                self?.isNavigationBarHidden = hidden
+            }
         }
         animator.startAnimation()
     }
@@ -74,10 +76,14 @@ open class WorkaroundNavigationController: UINavigationController {
             curve: .easeInOut
         )
         animator.addAnimations { [weak self] in
-            self?.toolbar.transform = toTransform
+            DispatchQueue.main.async {
+                self?.toolbar.transform = toTransform
+            }
         }
         animator.addCompletion { [weak self] _ in
-            self?.isToolbarHidden = hidden
+            DispatchQueue.main.async {
+                self?.isToolbarHidden = hidden
+            }
         }
         animator.startAnimation()
     }
