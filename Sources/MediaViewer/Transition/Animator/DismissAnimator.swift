@@ -21,7 +21,7 @@ final class DismissAnimator: Animator {
                 )
         }
         animator.addCompletion { _ in
-            DispatchQueue.main.async {
+            MainActor.assumeIsolated {
                 let didComplete = !transitionContext.transitionWasCancelled
                 transitionContext.completeTransition(didComplete)
             }

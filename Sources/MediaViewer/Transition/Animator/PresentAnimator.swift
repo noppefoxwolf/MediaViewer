@@ -30,7 +30,7 @@ final class PresentAnimator: Animator {
                 .transform = .identity
         }
         animator.addCompletion { _ in
-            DispatchQueue.main.async {
+            MainActor.assumeIsolated {
                 previewController
                     .currentTransitionView?
                     .alpha = 1
