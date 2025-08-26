@@ -90,19 +90,14 @@ open class PreviewController: UIViewController {
             let percentComplete = translation.y / gesture.view!.bounds.height
             if percentComplete < 0 {
                 if !presenter.reversedDismiss {
-                    presenter.interactiveTransition?.cancel()
-                    presenter.interactiveTransition = InteractiveTransition()
                     presenter.reversedDismiss.toggle()
-                    dismiss(animated: true)
                 }
             } else {
                 if presenter.reversedDismiss {
-                    presenter.interactiveTransition?.cancel()
-                    presenter.interactiveTransition = InteractiveTransition()
                     presenter.reversedDismiss.toggle()
-                    dismiss(animated: true)
                 }
             }
+            presenter.interactiveTransition?.reversed = presenter.reversedDismiss
             presenter.interactiveTransition?.update(abs(percentComplete))
         case .ended:
             if abs(translation.y) > 60 {
