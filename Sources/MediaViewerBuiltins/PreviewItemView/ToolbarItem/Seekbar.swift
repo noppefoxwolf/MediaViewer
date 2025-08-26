@@ -46,10 +46,13 @@ fileprivate final class Seekbar: UIControl {
             onTapPlaybackButton()
         }, for: .primaryActionTriggered)
         
+        #if swift(>=6.2)
         if #available(iOS 26.0, *) {
             slider.tintColor = .white
             slider.sliderStyle = .thumbless
         }
+        #endif
+
         slider.addAction(UIAction { [unowned self] _ in
             sliderControlValue.send(slider.value)
         }, for: .primaryActionTriggered)
