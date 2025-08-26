@@ -64,9 +64,9 @@ final class ViewController: UICollectionViewController {
     
     init() {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 0
-        layout.itemSize = CGSize(width: 200, height: 200)
+        layout.minimumLineSpacing = 12
+        layout.minimumInteritemSpacing = 12
+        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         super.init(collectionViewLayout: layout)
     }
     
@@ -77,6 +77,7 @@ final class ViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.dataSource = dataSource
+        collectionView.delegate = self
         
         snapshot.appendSections([.items])
         snapshot.appendItems([
@@ -123,6 +124,25 @@ extension ViewController: PreviewControllerDelegate {
     ) -> UIView? {
         let indexPath = collectionView.indexPathsForSelectedItems!.first!
         return collectionView.cellForItem(at: indexPath)
+    }
+}
+
+extension ViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let layout = collectionViewLayout as! UICollectionViewFlowLayout
+        let availableWidth = collectionView.bounds.width - layout.sectionInset.left - layout.sectionInset.right
+        
+        let numberOfColumns: CGFloat
+        if collectionView.traitCollection.horizontalSizeClass == .compact {
+            numberOfColumns = collectionView.bounds.width > collectionView.bounds.height ? 4 : 2
+        } else {
+            numberOfColumns = collectionView.bounds.width > collectionView.bounds.height ? 6 : 4
+        }
+        
+        let totalSpacing = layout.minimumInteritemSpacing * (numberOfColumns - 1)
+        let itemWidth = (availableWidth - totalSpacing) / numberOfColumns
+        
+        return CGSize(width: itemWidth, height: itemWidth)
     }
 }
 
