@@ -34,6 +34,11 @@ open class WorkaroundNavigationController: UINavigationController {
         set { _isToolbarHidden = newValue }
     }
     
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        super.setToolbarHidden(false, animated: false)
+    }
+    
     public override func setNavigationBarHidden(_ hidden: Bool, animated: Bool) {
         guard isNavigationBarHidden != hidden else { return }
         let toTransform: CGAffineTransform
@@ -60,7 +65,22 @@ open class WorkaroundNavigationController: UINavigationController {
         animator.startAnimation()
     }
     
+    
+    var isGlassStyleToolbar: Bool {
+        // <_TtGC5UIKit17UICoreHostingViewVCS_21ToolbarVisualProvider8RootView_: 0x102825740; frame = (0 0; 0 0); layer = <CALayer: 0x600000c60db0>>
+        toolbar.subviews.first?.bounds.isEmpty == true
+    }
+    
     public override func setToolbarHidden(_ hidden: Bool, animated: Bool) {
+        if isGlassStyleToolbar {
+            super.setToolbarHidden(hidden, animated: animated)
+            isToolbarHidden = hidden
+        } else {
+            setToolbarItemsManually(hidden, animated: animated)
+        }
+    }
+    
+    func setToolbarItemsManually(_ hidden: Bool, animated: Bool) {
         guard isToolbarHidden != hidden else { return }
         let toTransform: CGAffineTransform
         if hidden {
