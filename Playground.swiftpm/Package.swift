@@ -32,7 +32,8 @@ let package = Package(
             ],
             capabilities: [
                 .photoLibrary(purposeString: "Save image and video")
-            ]
+            ],
+            additionalInfoPlistContentFilePath: "Resources/Info.plist"
         )
     ],
     dependencies: [
