@@ -8,8 +8,12 @@ final class NavigationController: WorkaroundNavigationController {
         navigationBar.standardAppearance.configureWithTransparentBackground()
         navigationBar.tintColor = .white
         
-        toolbar.standardAppearance = UIToolbarAppearance()
-        toolbar.standardAppearance.configureWithTransparentBackground()
+        let toolbarAppearance = UIToolbarAppearance()
+        toolbarAppearance.configureWithTransparentBackground()
+        toolbar.standardAppearance = toolbarAppearance
+        toolbar.compactAppearance = toolbarAppearance
+        toolbar.scrollEdgeAppearance = toolbarAppearance
+        toolbar.compactScrollEdgeAppearance = toolbarAppearance
         toolbar.tintColor = .white
         
         hidesBarsOnTap = true
