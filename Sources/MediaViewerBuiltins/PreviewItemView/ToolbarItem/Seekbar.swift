@@ -2,7 +2,7 @@ import UIKit
 import AVKit
 
 extension UIBarButtonItem {
-    static func seekbar(_ player: AVPlayer) -> UIBarButtonItem {
+    public static func seekbar(_ player: AVPlayer) -> UIBarButtonItem {
         UIBarButtonItem(customView: Seekbar(player))
     }
 }
