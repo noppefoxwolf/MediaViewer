@@ -5,7 +5,10 @@ import PackageDescription
 
 let package = Package(
     name: "MediaViewer",
-    platforms: [.iOS(.v17)],
+    platforms: [
+        .iOS(.v17),
+        .visionOS(.v2),
+    ],
     products: [
         .library(
             name: "MediaViewer",

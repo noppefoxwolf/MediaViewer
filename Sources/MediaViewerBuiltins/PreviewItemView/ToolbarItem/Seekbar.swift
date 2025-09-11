@@ -47,7 +47,7 @@ fileprivate final class Seekbar: UIControl {
         }, for: .primaryActionTriggered)
         
         #if swift(>=6.2)
-        if #available(iOS 26.0, *) {
+        if #available(iOS 26.0, visionOS 26.0, *) {
             slider.tintColor = .white
             slider.sliderStyle = .thumbless
         }
