@@ -1,12 +1,12 @@
 import UIKit
 
 final class PreviewItemViewController: UIViewController {
-    let previewItem: any PreviewItem
+    let previewPage: PreviewPage
     let index: Int
     var readyToPreviewTask: Task<Void, any Error>? = nil
     
-    init(_ previewItem: any PreviewItem, index: Int) {
-        self.previewItem = previewItem
+    init(_ previewPage: PreviewPage, index: Int) {
+        self.previewPage = previewPage
         self.index = index
         super.init(nibName: nil, bundle: nil)
     }
@@ -18,13 +18,13 @@ final class PreviewItemViewController: UIViewController {
         view.isUserInteractionEnabled = true
         view.backgroundColor = .clear
         
-        let thumbnailVC = previewItem.makeThumbnailViewController()
+        let thumbnailVC = previewPage.makeThumbnailViewController()
         if let thumbnailVC {
             embed(thumbnailVC)
         }
         
         readyToPreviewTask = Task {
-            let contentVC = await previewItem.makeViewController()
+            let contentVC = await previewPage.makeViewController()
             thumbnailVC?.digup()
             embed(contentVC)
         }

@@ -9,7 +9,11 @@ open class PreviewController: UIViewController {
     
     private let presenter = Presenter()
     
-    public weak var dataSource: (any PreviewControllerDataSource)? = nil
+    public var previewPages: [PreviewPage] = [] {
+        didSet {
+            refreshCurrentPreviewItem()
+        }
+    }
     public weak var delegate: (any PreviewControllerDelegate)? = nil
     
     let internalNavigationController = NavigationController(
@@ -27,27 +31,23 @@ open class PreviewController: UIViewController {
     
     public var currentPreviewItemIndex: Int = 0
     
-    public var currentPreviewItem: (any PreviewItem)? {
-        dataSource?.previewController(self, previewItemAt: currentPreviewItemIndex)
+    public var currentPreviewItem: PreviewPage? {
+        guard currentPreviewItemIndex < previewPages.count else { return nil }
+        return previewPages[currentPreviewItemIndex]
     }
     
     public func refreshCurrentPreviewItem() {
-        
-        let item = dataSource?.previewController(
-            self,
-            previewItemAt: currentPreviewItemIndex
+        guard currentPreviewItemIndex < previewPages.count else { return }
+        let page = previewPages[currentPreviewItemIndex]
+        let vc = PreviewItemViewController(
+            page,
+            index: currentPreviewItemIndex
         )
-        if let item {
-            let vc = PreviewItemViewController(
-                item,
-                index: currentPreviewItemIndex
-            )
-            pageViewController.setViewControllers(
-                [vc],
-                direction: .forward,
-                animated: false
-            )
-        }
+        pageViewController.setViewControllers(
+            [vc],
+            direction: .forward,
+            animated: false
+        )
     }
     
     public init() {
@@ -141,13 +141,9 @@ extension PreviewController: UIPageViewControllerDataSource {
     ) -> UIViewController? {
         let previewItemViewController = viewController as! PreviewItemViewController
         let beforeIndex = previewItemViewController.index - 1
-        guard beforeIndex >= 0 else { return nil }
-        let item = dataSource?.previewController(
-            self,
-            previewItemAt: beforeIndex
-        )
-        guard let item else { return nil }
-        return PreviewItemViewController(item, index: beforeIndex)
+        guard beforeIndex >= 0 && beforeIndex < previewPages.count else { return nil }
+        let page = previewPages[beforeIndex]
+        return PreviewItemViewController(page, index: beforeIndex)
     }
     
     public func pageViewController(
@@ -156,15 +152,9 @@ extension PreviewController: UIPageViewControllerDataSource {
     ) -> UIViewController? {
         let previewItemViewController = viewController as! PreviewItemViewController
         let afterIndex = previewItemViewController.index + 1
-        let itemsCount = dataSource?.numberOfPreviewItems(in: self)
-        guard let itemsCount else { return nil }
-        guard afterIndex < itemsCount else { return nil }
-        let item = dataSource?.previewController(
-            self,
-            previewItemAt: afterIndex
-        )
-        guard let item else { return nil }
-        return PreviewItemViewController(item, index: afterIndex)
+        guard afterIndex < previewPages.count else { return nil }
+        let page = previewPages[afterIndex]
+        return PreviewItemViewController(page, index: afterIndex)
     }
 }
 
@@ -185,8 +175,9 @@ extension PreviewController: PageViewControllerUIDelegate {
     }
     
     func presentActivityActionTriggered() {
-        let item = dataSource?.previewController(self, previewItemAt: currentPreviewItemIndex)
-        let configuration = item?.makeActivityItemsConfiguration()
+        guard currentPreviewItemIndex < previewPages.count else { return }
+        let page = previewPages[currentPreviewItemIndex]
+        let configuration = page.makeActivityItemsConfiguration()
         guard let configuration else { return }
         let vc = UIActivityViewController(
             activityItemsConfiguration: configuration
