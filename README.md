@@ -134,7 +134,7 @@ extension YourViewController: PreviewControllerDelegate {
 ## Apps Using MediaViewer
 
 <p float="left">
-    <a href="https://apps.apple.com/app/id1668645019"><img src="https://github.com/noppefoxwolf/MediaViewer/blob/main/.github/dawn.png" height="65"></a>
+    <a href="https://apps.apple.com/app/id1668645019"><img src="https://github.com/noppefoxwolf/markdown-resources/blob/main/app-icons/dev.noppe.snowfox.png" height="65"></a>
 </p>
 
 If your app uses MediaViewer, please add it via Pull Request!
