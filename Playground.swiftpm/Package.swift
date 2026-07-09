@@ -44,7 +44,8 @@ let package = Package(
             name: "AppModule",
             dependencies: [
                 .product(name: "MediaViewer", package: "mediaviewer"),
-                .product(name: "MediaViewerBuiltins", package: "mediaviewer")
+                .product(name: "MediaViewerBuiltins", package: "mediaviewer"),
+                .product(name: "MediaViewerSwiftUI", package: "mediaviewer")
             ],
             path: "."
         )

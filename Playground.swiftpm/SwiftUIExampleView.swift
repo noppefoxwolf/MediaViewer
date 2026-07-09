@@ -1,10 +1,12 @@
 import MediaViewer
+import MediaViewerSwiftUI
 import SwiftUI
 import UIKit
 
 struct SwiftUIExampleView: View {
-    @State private var selection: PreviewSelection?
+    @State private var selectedItem: PreviewPage?
 
+    private let previewPages = ExampleItem.samples.map(\.mediaPage)
     private let columns = [
         GridItem(.adaptive(minimum: 150), spacing: 8)
     ]
@@ -15,7 +17,7 @@ struct SwiftUIExampleView: View {
                 LazyVGrid(columns: columns, spacing: 8) {
                     ForEach(Array(ExampleItem.samples.enumerated()), id: \.element) { index, item in
                         Button {
-                            selection = PreviewSelection(index: index)
+                            selectedItem = previewPages[index]
                         } label: {
                             ExampleItemThumbnail(item: item)
                         }
@@ -26,19 +28,11 @@ struct SwiftUIExampleView: View {
             }
             .navigationTitle("SwiftUI Example")
         }
-        .sheet(item: $selection) { selection in
-            PreviewControllerView(
-                previewPages: ExampleItem.samples.map(\.mediaPage),
-                currentPreviewItemIndex: selection.index
-            )
-        }
+        .mediaViewer(
+            item: $selectedItem,
+            items: previewPages
+        )
     }
-}
-
-private struct PreviewSelection: Identifiable {
-    let index: Int
-
-    var id: Int { index }
 }
 
 private struct ExampleItemThumbnail: View {
@@ -85,22 +79,5 @@ private struct ExampleItemThumbnail: View {
                     .font(.title)
             }
         }
-    }
-}
-
-private struct PreviewControllerView: UIViewControllerRepresentable {
-    let previewPages: [PreviewPage]
-    let currentPreviewItemIndex: Int
-
-    func makeUIViewController(context: Context) -> PreviewController {
-        let previewController = PreviewController()
-        previewController.previewPages = previewPages
-        previewController.currentPreviewItemIndex = currentPreviewItemIndex
-        return previewController
-    }
-
-    func updateUIViewController(_ previewController: PreviewController, context: Context) {
-        previewController.previewPages = previewPages
-        previewController.currentPreviewItemIndex = currentPreviewItemIndex
     }
 }
