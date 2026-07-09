@@ -17,6 +17,10 @@ let package = Package(
         .library(
             name: "MediaViewerBuiltins",
             targets: ["MediaViewerBuiltins"]
+        ),
+        .library(
+            name: "MediaViewerSwiftUI",
+            targets: ["MediaViewerSwiftUI"]
         )
     ],
     dependencies: [
@@ -28,6 +32,12 @@ let package = Package(
         ),
         .target(
             name: "MediaViewerBuiltins",
+            dependencies: [
+                "MediaViewer"
+            ]
+        ),
+        .target(
+            name: "MediaViewerSwiftUI",
             dependencies: [
                 "MediaViewer"
             ]

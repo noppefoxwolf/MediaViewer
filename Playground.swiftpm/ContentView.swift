@@ -1,14 +1,17 @@
 import SwiftUI
 
-struct ContentView: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> some UIViewController {
-        let viewController = ViewController()
-        let navigationController = UINavigationController(rootViewController: viewController)
-        navigationController.navigationBar.prefersLargeTitles = true
-        return navigationController
-    }
-    
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
+struct ContentView: View {
+    var body: some View {
+        TabView {
+            UIKitExampleView()
+                .tabItem {
+                    Label("UIKit", systemImage: "rectangle.grid.2x2")
+                }
+
+            SwiftUIExampleView()
+                .tabItem {
+                    Label("SwiftUI", systemImage: "square.grid.2x2")
+                }
+        }
     }
 }
-

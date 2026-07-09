@@ -1,38 +1,8 @@
 import SwiftUI
-import AVFoundation
 import UIKit
 import MediaViewer
-import MediaViewerBuiltins
 
-enum Item: Hashable {
-    case image(UIImage, String)
-    case video(URL, String)
-    case text(String)
-    case failed
-    
-    var mediaPage: PreviewPage {
-        switch self {
-        case .image(let image, _):
-            return PreviewPage(image: image)
-        case .video(let url, _):
-            return PreviewPage(player: AVPlayer(url: url))
-        case .text(let text):
-            return PreviewPage(
-                viewControllerProvider: {
-                    try! await Task.sleep(for: .seconds(1))
-                    return UIHostingController(rootView: Text(text).font(.title))
-                },
-                thumbnailViewControllerProvider: {
-                    UIHostingController(rootView: ProgressView())
-                }
-            )
-        case .failed:
-            return PreviewPage(player: AVPlayer(url: URL(string: "https://example.com")!))
-        }
-    }
-}
-
-final class ViewController: UICollectionViewController {
+final class UIKitExampleViewController: UICollectionViewController {
     private lazy var dataSource = createDataSource()
     
     init() {
@@ -45,7 +15,7 @@ final class ViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "MediaViewer Demo"
+        title = "UIKit Example"
         loadData()
     }
     
@@ -73,8 +43,8 @@ final class ViewController: UICollectionViewController {
         }
     }
     
-    private func createDataSource() -> UICollectionViewDiffableDataSource<Int, Item> {
-        let cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Item> { cell, indexPath, item in
+    private func createDataSource() -> UICollectionViewDiffableDataSource<Int, ExampleItem> {
+        let cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, ExampleItem> { cell, indexPath, item in
             cell.contentConfiguration = UIHostingConfiguration {
                 switch item {
                 case .image(let image, let title):
@@ -135,24 +105,15 @@ final class ViewController: UICollectionViewController {
             }
         }
         
-        return UICollectionViewDiffableDataSource<Int, Item>(collectionView: collectionView) { collectionView, indexPath, item in
+        return UICollectionViewDiffableDataSource<Int, ExampleItem>(collectionView: collectionView) { collectionView, indexPath, item in
             collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: item)
         }
     }
     
     private func loadData() {
-        var snapshot = NSDiffableDataSourceSnapshot<Int, Item>()
+        var snapshot = NSDiffableDataSourceSnapshot<Int, ExampleItem>()
         snapshot.appendSections([0])
-        
-        let items: [Item] = [
-            .image(UIImage(resource: .image1), "Photo 1"),
-            .image(UIImage(resource: .image2), "Photo 2"),
-            .video(URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/main.m3u8")!, "Sample Video"),
-            .text("Hello, World!"),
-            .failed
-        ]
-        
-        snapshot.appendItems(items)
+        snapshot.appendItems(ExampleItem.samples)
         dataSource.apply(snapshot, animatingDifferences: false)
     }
     
@@ -169,7 +130,7 @@ final class ViewController: UICollectionViewController {
     }
 }
 
-extension ViewController: PreviewControllerDelegate {
+extension UIKitExampleViewController: PreviewControllerDelegate {
     func previewController(_ controller: PreviewController, transitionViewFor page: PreviewPage) -> UIView? {
         guard let indexPath = collectionView.indexPathsForSelectedItems?.first else { return nil }
         return collectionView.cellForItem(at: indexPath)
