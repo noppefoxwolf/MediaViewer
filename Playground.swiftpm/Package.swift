@@ -16,7 +16,7 @@ let package = Package(
         .iOSApplication(
             name: "Playground",
             targets: ["AppModule"],
-            bundleIdentifier: "10D4861E-A98F-4ACA-A4F3-8CF9D7C74536",
+            bundleIdentifier: "dev.noppe.example",
             teamIdentifier: "FBQ6Z8AF3U",
             displayVersion: "1.0",
             bundleVersion: "1",
