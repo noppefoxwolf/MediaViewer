@@ -4,6 +4,7 @@ struct ContentView: View {
     var body: some View {
         TabView {
             UIKitExampleView()
+                .ignoresSafeArea()
                 .tabItem {
                     Label("UIKit", systemImage: "rectangle.grid.2x2")
                 }
