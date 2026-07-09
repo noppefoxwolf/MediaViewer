@@ -21,23 +21,33 @@ final class UIKitExampleViewController: UICollectionViewController {
     
     private static func createLayout() -> UICollectionViewLayout {
         UICollectionViewCompositionalLayout { _, environment in
-            let columns = environment.container.effectiveContentSize.width > 500 ? 3 : 2
+            let horizontalInsets: CGFloat = 32
+            let interItemSpacing: CGFloat = 8
+            let minimumItemWidth: CGFloat = 150
+            let availableWidth = environment.container.effectiveContentSize.width - horizontalInsets
+            let columns = max(
+                Int((availableWidth + interItemSpacing) / (minimumItemWidth + interItemSpacing)),
+                1
+            )
+            let itemWidth = (availableWidth - interItemSpacing * CGFloat(columns - 1)) / CGFloat(columns)
             
             let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1.0 / CGFloat(columns)),
+                widthDimension: .absolute(itemWidth),
                 heightDimension: .fractionalHeight(1.0)
             ))
-            item.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4)
             
             let group = NSCollectionLayoutGroup.horizontal(
                 layoutSize: NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(120)
+                    heightDimension: .estimated(104)
                 ),
-                subitems: [item]
+                repeatingSubitem: item,
+                count: columns
             )
+            group.interItemSpacing = .fixed(interItemSpacing)
             
             let section = NSCollectionLayoutSection(group: group)
+            section.interGroupSpacing = interItemSpacing
             section.contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
             return section
         }
@@ -102,7 +112,7 @@ final class UIKitExampleViewController: UICollectionViewController {
                             .lineLimit(1)
                     }
                 }
-            }
+            }.margins(.all, 0)
         }
         
         return UICollectionViewDiffableDataSource<Int, ExampleItem>(collectionView: collectionView) { collectionView, indexPath, item in
