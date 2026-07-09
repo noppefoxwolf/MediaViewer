@@ -131,6 +131,20 @@ extension YourViewController: PreviewControllerDelegate {
 - Swift 6.2+
 - Xcode 15.0+
 
+## Development
+
+MediaViewer is an iOS package, so build it with an iOS destination instead of plain `swift build`.
+
+```sh
+xcodebuild -scheme MediaViewerSwiftUI -destination generic/platform=iOS build
+```
+
+To build the example app:
+
+```sh
+xcodebuild -scheme Playground -destination generic/platform=iOS build
+```
+
 ## Apps Using MediaViewer
 
 <p float="left">
